@@ -1,10 +1,3 @@
-//
-//  Claude.swift
-//  ThreeMinutesTimer
-//
-//  Created by Cynthia Wang on 8/19/25.
-//
-
 import SwiftUI
 import SwiftData
 import AVFoundation
@@ -24,21 +17,21 @@ class AlarmSession {
 }
 
 // MARK: - Main App
-//@main
-//struct IntervalAlarmApp: App {
-//    var body: some Scene {
-//        WindowGroup {
-//            ContentView()
-//        }
-//        .modelContainer(for: AlarmSession.self)
-//    }
-//}
+@main
+struct IntervalAlarmApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: AlarmSession.self)
+    }
+}
 
 // MARK: - Content View
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var sessions: [AlarmSession]
-    @StateObject private var alarmManager = AlarmManager()
+    @State private var alarmManager = AlarmManager()
     
     var body: some View {
         NavigationStack {
@@ -198,13 +191,14 @@ struct ContentView: View {
 }
 
 // MARK: - Alarm Manager
-class AlarmManager: ObservableObject {
-    @Published var isRunning = false
-    @Published var currentInterval = 0
-    @Published var progress: Double = 0
-    @Published var timeRemaining = "3:00"
-    @Published var soundA: AlarmSound = .bell
-    @Published var soundB: AlarmSound = .chime
+@Observable
+class AlarmManager {
+    var isRunning = false
+    var currentInterval = 0
+    var progress: Double = 0
+    var timeRemaining = "3:00"
+    var soundA: AlarmSound = .bell
+    var soundB: AlarmSound = .chime
     
     private var timer: Timer?
     private var currentSession: AlarmSession?
