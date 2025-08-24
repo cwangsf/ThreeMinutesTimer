@@ -8,54 +8,135 @@
 import SwiftUI
 import SwiftData
 
-struct ContentView1: View {
+// MARK: - Content View
+struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @Query private var sessions: [AlarmSession]
+    @State private var alarmManager = AlarmManager()
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        NavigationStack {
+            VStack(spacing: 30) {
+                // Header
+                VStack {
+                    Text("Interval Alarm")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    Text("30min • 3min intervals • Alternating sounds")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // Progress Circle
+                ProgressCircleView(alarmManager: alarmManager)
+                
+                // Status
+                VStack {
+                    Text(alarmManager.statusText)
+                        .font(.headline)
+                        .foregroundColor(alarmManager.isRunning ? .blue : .secondary)
+                    
+                    if alarmManager.isRunning {
+                        Text("Sound: \(alarmManager.currentSoundName)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                
+                Spacer()
+                
+                // Sound Selection
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Alarm Sounds")
+                        .font(.headline)
+                    
+                    HStack {
+                        VStack {
+                            Text("Sound A")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Button(alarmManager.soundA.rawValue) {
+                                alarmManager.soundA = nextSound(alarmManager.soundA)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(alarmManager.isRunning)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack {
+                            Text("Sound B")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Button(alarmManager.soundB.rawValue) {
+                                alarmManager.soundB = nextSound(alarmManager.soundB)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(alarmManager.isRunning)
+                        }
+                    }
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
+                
+                // Control Buttons
+                HStack(spacing: 20) {
+                    if !alarmManager.isRunning {
+                        Button("Start Session") {
+                            startNewSession()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    } else {
+                        Button("Pause") {
+                            alarmManager.pause()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        
+                        Button("Stop") {
+                            alarmManager.stop()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.red)
+                        .controlSize(.large)
                     }
                 }
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+            .padding()
+            .onAppear {
+                requestNotificationPermission()
             }
+            .navigationTitle("")
+            .navigationBarHidden(true)
         }
+    }
+    
+    private func startNewSession() {
+        let session = AlarmSession()
+        modelContext.insert(session)
+        alarmManager.startSession(session: session)
+    }
+    
+    private func nextSound(_ current: AlarmSound) -> AlarmSound {
+        let sounds = AlarmSound.allCases
+        let currentIndex = sounds.firstIndex(of: current) ?? 0
+        let nextIndex = (currentIndex + 1) % sounds.count
+        return sounds[nextIndex]
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: AlarmSession.self, inMemory: true)
 }
