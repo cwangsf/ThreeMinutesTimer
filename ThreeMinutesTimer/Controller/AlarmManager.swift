@@ -32,13 +32,13 @@ class AlarmManager {
     var timeRemaining = "3:00"
     var soundA: AlarmSound = .bell
     var soundB: AlarmSound = .chime
-    
+
     private var timer: Timer?
     private var currentSession: AlarmSession?
-    private var secondsRemaining = 180 // 3 minutes
-    private let intervalDuration = 180 // 3 minutes in seconds
     private let totalIntervals = 10
     private var audioPlayer: AVAudioPlayer?
+    private var intervalStartTime: Date?
+    private var sessionStartTime: Date?
     
     var statusText: String {
         if !isRunning && currentInterval == 0 {
@@ -59,8 +59,9 @@ class AlarmManager {
     
     init() {
         setupAudioSession()
+        setupNotifications()
     }
-    
+
     private func setupAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
@@ -69,12 +70,71 @@ class AlarmManager {
             print("Failed to setup audio session: \(error)")
         }
     }
+
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleAppGoingToBackground()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleAppReturningToForeground()
+        }
+    }
+
+    private func handleAppGoingToBackground() {
+        // Timer will be suspended, but we keep track of time via intervalStartTime
+    }
+
+    private func handleAppReturningToForeground() {
+        guard isRunning, let startTime = intervalStartTime else { return }
+
+        // Recalculate time based on actual elapsed time
+        let elapsed = Date().timeIntervalSince(startTime)
+        let totalElapsedSeconds = Int(elapsed)
+
+        // Check if we missed any intervals
+        let missedIntervals = totalElapsedSeconds / intervalDuration
+
+        if missedIntervals > 0 {
+            // We missed one or more intervals while in background
+            currentInterval += missedIntervals
+
+            if currentInterval >= totalIntervals {
+                completeSession()
+                return
+            }
+
+            // Play sound for current interval since we just entered it
+            playCurrentSound()
+        }
+
+        // Calculate seconds into current interval
+        let secondsIntoInterval = totalElapsedSeconds % intervalDuration
+        secondsRemaining = intervalDuration - secondsIntoInterval
+
+        if secondsRemaining <= 0 {
+            completeInterval()
+        } else {
+            updateProgress()
+            updateTimeRemaining()
+        }
+    }
     
     func startSession(session: AlarmSession) {
         currentSession = session
         currentInterval = 0
         secondsRemaining = intervalDuration
         isRunning = true
+        sessionStartTime = Date()
+        intervalStartTime = Date()
         startTimer()
         playCurrentSound()
     }
@@ -95,12 +155,14 @@ class AlarmManager {
         progress = 0
         secondsRemaining = intervalDuration
         updateTimeRemaining()
-        
+
         if let session = currentSession {
             session.endTime = Date()
             session.completedIntervals = currentInterval
         }
         currentSession = nil
+        intervalStartTime = nil
+        sessionStartTime = nil
     }
     
     private func startTimer() {
@@ -121,13 +183,14 @@ class AlarmManager {
     
     private func completeInterval() {
         currentInterval += 1
-        
+
         if currentInterval >= totalIntervals {
             // Session completed
             completeSession()
         } else {
             // Start next interval
             secondsRemaining = intervalDuration
+            intervalStartTime = Date()
             playCurrentSound()
         }
     }
@@ -137,13 +200,16 @@ class AlarmManager {
         timer?.invalidate()
         timer = nil
         audioPlayer?.stop()
-        
+
         if let session = currentSession {
             session.endTime = Date()
             session.completedIntervals = totalIntervals
             session.isCompleted = true
         }
-        
+
+        intervalStartTime = nil
+        sessionStartTime = nil
+
         // Show completion notification
         scheduleNotification(title: "Session Complete!", body: "Your 30-minute interval session has finished.")
     }

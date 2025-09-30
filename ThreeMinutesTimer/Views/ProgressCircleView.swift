@@ -9,7 +9,7 @@ import SwiftUI
 struct ProgressCircleView: View {
     let circleSize: CGFloat = 200
     let circleWidth: CGFloat = 12
-    let repeatTime: Int = 10
+    let repeatTime: Int = 3
     var alarmManager: AlarmManager
     
     var body: some View {
