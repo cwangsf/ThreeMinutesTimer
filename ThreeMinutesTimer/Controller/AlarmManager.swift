@@ -9,6 +9,7 @@
 import SwiftData
 import AVFoundation
 import UserNotifications
+import SwiftUI
 
 // MARK: - Models
 @Model
@@ -32,9 +33,16 @@ class AlarmManager {
     var timeRemaining = "3:00"
     var soundA: AlarmSound = .bell
     var soundB: AlarmSound = .chime
+    var themeColor: ThemeColor {
+        didSet {
+            UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
+        }
+    }
 
     private var timer: Timer?
     private var currentSession: AlarmSession?
+    private var secondsRemaining = 10 // 3 minutes
+    private let intervalDuration = 10 // 3 minutes in seconds
     private let totalIntervals = 10
     private var audioPlayer: AVAudioPlayer?
     private var intervalStartTime: Date?
@@ -58,6 +66,14 @@ class AlarmManager {
     }
     
     init() {
+        // Load saved theme color
+        if let savedColorString = UserDefaults.standard.string(forKey: "themeColor"),
+           let savedColor = ThemeColor(rawValue: savedColorString) {
+            self.themeColor = savedColor
+        } else {
+            self.themeColor = .purple
+        }
+
         setupAudioSession()
         setupNotifications()
     }
@@ -272,7 +288,7 @@ enum AlarmSound: String, CaseIterable {
     case beep = "Beep"
     case tone = "Tone"
     case alert = "Alert"
-    
+
     var filename: String {
         switch self {
         case .bell: return "bell"
@@ -280,6 +296,38 @@ enum AlarmSound: String, CaseIterable {
         case .beep: return "beep"
         case .tone: return "tone"
         case .alert: return "alert"
+        }
+    }
+}
+
+// MARK: - Theme Color
+enum ThemeColor: String, CaseIterable, Codable {
+    case blue = "Blue"
+    case purple = "Purple"
+    case pink = "Pink"
+    case orange = "Orange"
+    case green = "Green"
+    case red = "Red"
+
+    var color: Color {
+        switch self {
+        case .blue: return .blue
+        case .purple: return .purple
+        case .pink: return .pink
+        case .orange: return .orange
+        case .green: return .green
+        case .red: return .red
+        }
+    }
+
+    var gradientColors: [Color] {
+        switch self {
+        case .blue: return [.blue, .cyan]
+        case .purple: return [.purple, .pink]
+        case .pink: return [.pink, .orange]
+        case .orange: return [.orange, .yellow]
+        case .green: return [.green, .mint]
+        case .red: return [.red, .orange]
         }
     }
 }

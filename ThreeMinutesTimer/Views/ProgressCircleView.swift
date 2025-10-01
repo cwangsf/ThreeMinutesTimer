@@ -22,7 +22,7 @@ struct ProgressCircleView: View {
                 .trim(from: 0, to: alarmManager.progress)
                 .stroke(
                     LinearGradient(
-                        colors: [.blue, .purple],
+                        colors: alarmManager.themeColor.gradientColors,
                         startPoint: .top,
                         endPoint: .bottom
                     ),
@@ -31,20 +31,20 @@ struct ProgressCircleView: View {
                 .frame(width: circleSize, height: circleSize)
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut, value: alarmManager.progress)
-            
+
             VStack {
                 Text(String(localized: .intervalTitle))
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text("\(alarmManager.currentInterval + 1)/\(String(repeatTime))")
                     .font(.title)
                     .fontWeight(.bold)
-                
+
                 if alarmManager.isRunning {
                     Text(alarmManager.timeRemaining)
                         .font(.title2)
-                        .foregroundColor(.blue)
+                        .foregroundColor(alarmManager.themeColor.color)
                         .monospacedDigit()
                 }
             }

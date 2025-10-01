@@ -13,7 +13,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var sessions: [AlarmSession]
     @State private var alarmManager = AlarmManager()
-    
+    @State private var showSettings = false
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
@@ -37,7 +38,7 @@ struct ContentView: View {
                 VStack {
                     Text(alarmManager.statusText)
                         .font(.headline)
-                        .foregroundColor(alarmManager.isRunning ? .blue : .secondary)
+                        .foregroundColor(alarmManager.isRunning ? alarmManager.themeColor.color : .secondary)
                     
                     if alarmManager.isRunning {
                         Text("Sound: \(alarmManager.currentSoundName)")
@@ -114,8 +115,21 @@ struct ContentView: View {
                 requestNotificationPermission()
             }
             .navigationTitle("")
-            .navigationBarHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gear")
+                            .foregroundColor(alarmManager.themeColor.color)
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView(alarmManager: alarmManager)
+            }
         }
+        .tint(alarmManager.themeColor.color)
     }
     
     private func startNewSession() {
