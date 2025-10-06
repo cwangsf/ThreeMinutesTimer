@@ -11,6 +11,7 @@ import SwiftData
 // MARK: - Content View
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var sessions: [AlarmSession]
     @State private var alarmManager = AlarmManager()
     @State private var showSettings = false
@@ -127,6 +128,11 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView(alarmManager: alarmManager)
+            }
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                if newPhase == .active && oldPhase == .background {
+                    alarmManager.handleAppReturningToForeground()
+                }
             }
         }
         .tint(alarmManager.themeColor.color)

@@ -75,7 +75,6 @@ class AlarmManager {
         }
 
         setupAudioSession()
-        setupNotifications()
     }
 
     private func setupAudioSession() {
@@ -87,29 +86,7 @@ class AlarmManager {
         }
     }
 
-    private func setupNotifications() {
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willResignActiveNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.handleAppGoingToBackground()
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.didBecomeActiveNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.handleAppReturningToForeground()
-        }
-    }
-
-    private func handleAppGoingToBackground() {
-        // Timer will be suspended, but we keep track of time via intervalStartTime
-    }
-
-    private func handleAppReturningToForeground() {
+    func handleAppReturningToForeground() {
         guard isRunning, let startTime = intervalStartTime else { return }
 
         // Recalculate time based on actual elapsed time
