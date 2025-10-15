@@ -1,0 +1,1 @@
+A new fitness trend, dubbed 'Japanese walking' by some TikTokers, is starting to gain popularity. The trend is inspired by a 2007 study conducted by a Japanese research group that found some health benefits by alternating between high-intensity and moderate paced walking.
