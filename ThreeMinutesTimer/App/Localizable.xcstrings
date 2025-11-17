@@ -4,15 +4,8 @@
     "" : {
 
     },
-    "%lld/%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld/%2$@"
-          }
-        }
-      }
+    "%lld/10" : {
+
     },
     "30min • 3min intervals • Alternating sounds" : {
 

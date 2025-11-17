@@ -9,17 +9,22 @@ import SwiftUI
 struct ProgressCircleView: View {
     let circleSize: CGFloat = 200
     let circleWidth: CGFloat = 12
-    let repeatTime: Int = 3
     var alarmManager: AlarmManager
-    
+
+    var intervalProgress: Double {
+        // Progress for current interval only (0 to 1)
+        let secondsElapsedInInterval = 180 - alarmManager.secondsRemaining
+        return Double(secondsElapsedInInterval) / 180.0
+    }
+
     var body: some View {
         ZStack {
             Circle()
                 .stroke(Color.gray.opacity(0.3), lineWidth: circleWidth)
                 .frame(width: circleSize, height: circleSize)
-            
+
             Circle()
-                .trim(from: 0, to: alarmManager.progress)
+                .trim(from: 0, to: intervalProgress)
                 .stroke(
                     LinearGradient(
                         colors: alarmManager.themeColor.gradientColors,
@@ -30,14 +35,14 @@ struct ProgressCircleView: View {
                 )
                 .frame(width: circleSize, height: circleSize)
                 .rotationEffect(.degrees(-90))
-                .animation(.easeInOut, value: alarmManager.progress)
+                .animation(.easeInOut, value: intervalProgress)
 
             VStack {
                 Text(String(localized: .intervalTitle))
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                Text("\(alarmManager.currentInterval + 1)/\(String(repeatTime))")
+                Text("\(alarmManager.currentInterval + 1)/10")
                     .font(.title)
                     .fontWeight(.bold)
 

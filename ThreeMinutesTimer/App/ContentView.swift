@@ -18,17 +18,25 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
+            ZStack {
+                // Background Image
+                Image("Portrait1")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 20) {
                     // Header
                     VStack {
                         Text("Interval Alarm")
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                            .foregroundColor(alarmManager.themeColor.color)
 
                         Text("30min • 3min intervals • Alternating sounds")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(alarmManager.themeColor.color)
                     }
 
                     // Progress Circle
@@ -51,6 +59,7 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Alarm Sounds")
                             .font(.headline)
+                            .foregroundColor(alarmManager.themeColor.color)
 
                         HStack {
                             VStack {
@@ -88,6 +97,7 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Background Music")
                             .font(.headline)
+                            .foregroundColor(alarmManager.themeColor.color)
 
                         HStack {
                             VStack {
@@ -144,11 +154,12 @@ struct ContentView: View {
                             .controlSize(.large)
                         }
                     }
+                    .padding()
+                    }
                 }
-                .padding()
-            }
-            .onAppear {
-                requestNotificationPermission()
+                .onAppear {
+                    requestNotificationPermission()
+                }
             }
             .navigationTitle("")
             .toolbar {
@@ -165,8 +176,12 @@ struct ContentView: View {
                 SettingsView(alarmManager: alarmManager)
             }
             .onChange(of: scenePhase) { oldPhase, newPhase in
+                print("🔄 Scene phase changed: \(oldPhase) -> \(newPhase)")
                 if newPhase == .active && oldPhase == .background {
+                    print("📱 App returning to foreground")
                     alarmManager.handleAppReturningToForeground()
+                } else if newPhase == .background {
+                    print("📵 App going to background")
                 }
             }
         }

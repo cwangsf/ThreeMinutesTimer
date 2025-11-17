@@ -10,6 +10,9 @@ import SwiftData
 import AVFoundation
 import UserNotifications
 import SwiftUI
+import Dispatch
+import UIKit
+import ObjectiveC
 
 // MARK: - Models
 @Model
@@ -26,7 +29,7 @@ class AlarmSession {
 
 // MARK: - Alarm Manager
 @Observable
-class AlarmManager {
+class AlarmManager: NSObject, AVAudioPlayerDelegate {
     var isRunning = false
     var currentInterval = 0
     var progress: Double = 0
@@ -42,11 +45,15 @@ class AlarmManager {
     }
 
     private var timer: Timer?
+    private var dispatchTimer: DispatchSourceTimer?
     private var currentSession: AlarmSession?
-    private var secondsRemaining = 180 // 3 minutes
+    var secondsRemaining = 180 // 3 minutes
     private let intervalDuration = 180 // 3 minutes in seconds
     private let totalIntervals = 10
-    private var audioPlayer: AVAudioPlayer?
+    private var musicPlayer: AVPlayer?
+    private var alertPlayer: AVAudioPlayer?
+    private var audioSessionActivated = false
+    private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
     private var intervalStartTime: Date?
     private var sessionStartTime: Date?
     
@@ -67,7 +74,7 @@ class AlarmManager {
         return sound.rawValue
     }
     
-    init() {
+    override init() {
         // Load saved theme color
         if let savedColorString = UserDefaults.standard.string(forKey: "themeColor"),
            let savedColor = ThemeColor(rawValue: savedColorString) {
@@ -76,15 +83,58 @@ class AlarmManager {
             self.themeColor = .purple
         }
 
+        // Initialize NSObject
+        super.init()
+
         setupAudioSession()
+        setupAudioSessionInterruptionHandling()
+    }
+
+    private func setupAudioSessionInterruptionHandling() {
+        let audioSession = AVAudioSession.sharedInstance()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAudioSessionInterruption(notification:)),
+            name: AVAudioSession.interruptionNotification,
+            object: audioSession
+        )
+        print("🎧 Audio session interruption handler registered")
+    }
+
+    @objc private func handleAudioSessionInterruption(notification: Notification) {
+        print("🎧 Audio session interruption received")
+        guard let userInfo = notification.userInfo else {
+            print("❌ No userInfo in interruption notification")
+            return
+        }
+
+        guard let typeValue = userInfo["AVAudioSessionInterruptionTypeKey"] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            print("❌ Could not get interruption type from userInfo")
+            return
+        }
+
+        print("🎧 Audio session interruption: \(type == .began ? "BEGAN" : "ENDED")")
+
+        if type == .ended {
+            // Resume playback after interruption
+            if isRunning && musicPlayer != nil {
+                print("▶️ Resuming music after interruption ended")
+                musicPlayer?.play()
+            }
+        }
     }
 
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, options: [.duckOthers])
+            // Use empty options to NOT deactivate on interruption
+            try audioSession.setActive(true)
+            audioSessionActivated = true
+            print("✅ Audio session setup successfully")
         } catch {
-            print("Failed to setup audio session: \(error)")
+            print("❌ Failed to setup audio session: \(error)")
         }
     }
 
@@ -130,6 +180,8 @@ class AlarmManager {
         isRunning = true
         sessionStartTime = Date()
         intervalStartTime = Date()
+        setupAudioSession()
+        requestBackgroundTask()
         startTimer()
         playCurrentMusic()
     }
@@ -138,20 +190,30 @@ class AlarmManager {
         isRunning = false
         timer?.invalidate()
         timer = nil
-        audioPlayer?.stop()
-        audioPlayer = nil
+        dispatchTimer?.cancel()
+        dispatchTimer = nil
+        musicPlayer?.pause()
+        musicPlayer = nil
+        alertPlayer?.stop()
+        alertPlayer = nil
+        endBackgroundTask()
     }
     
     func stop() {
         isRunning = false
         timer?.invalidate()
         timer = nil
-        audioPlayer?.stop()
-        audioPlayer = nil
+        dispatchTimer?.cancel()
+        dispatchTimer = nil
+        musicPlayer?.pause()
+        musicPlayer = nil
+        alertPlayer?.stop()
+        alertPlayer = nil
         currentInterval = 0
         progress = 0
         secondsRemaining = intervalDuration
         updateTimeRemaining()
+        endBackgroundTask()
 
         if let session = currentSession {
             session.endTime = Date()
@@ -163,9 +225,23 @@ class AlarmManager {
     }
     
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            self.updateTimer()
+        let queue = DispatchQueue.global(qos: .userInitiated)
+        dispatchTimer = DispatchSource.makeTimerSource(queue: queue)
+        dispatchTimer?.schedule(wallDeadline: .now(), repeating: 1.0)
+        dispatchTimer?.setEventHandler { [weak self] in
+            DispatchQueue.main.async {
+                // If player is paused but we're still running, resume it
+                if let player = self?.musicPlayer, self?.isRunning == true {
+                    if player.timeControlStatus == .paused {
+                        print("⚠️ Player was paused, resuming...")
+                        player.play()
+                    }
+                    print("🎵 Timer tick - Player status: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
+                }
+                self?.updateTimer()
+            }
         }
+        dispatchTimer?.resume()
     }
     
     private func updateTimer() {
@@ -203,8 +279,13 @@ class AlarmManager {
         isRunning = false
         timer?.invalidate()
         timer = nil
-        audioPlayer?.stop()
-        audioPlayer = nil
+        dispatchTimer?.cancel()
+        dispatchTimer = nil
+        musicPlayer?.pause()
+        musicPlayer = nil
+        alertPlayer?.stop()
+        alertPlayer = nil
+        endBackgroundTask()
 
         if let session = currentSession {
             session.endTime = Date()
@@ -249,8 +330,10 @@ class AlarmManager {
         }
 
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
+            alertPlayer = try AVAudioPlayer(contentsOf: url)
+            alertPlayer?.delegate = self
+            alertPlayer?.play()
+            print("Playing alert sound: \(sound.rawValue)")
         } catch {
             print("Error playing alert sound: \(error)")
             playSystemSound()
@@ -259,17 +342,61 @@ class AlarmManager {
 
     private func playMusic(_ music: MusicTrack) {
         guard let url = Bundle.main.url(forResource: music.filename, withExtension: "mp3") else {
-            print("Music file not found: \(music.filename)")
+            print("❌ Music file not found: \(music.filename)")
             return
         }
 
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = 0 // Play once
-            audioPlayer?.play()
-        } catch {
-            print("Error playing music: \(error)")
+        print("📁 Music URL: \(url)")
+
+        // Ensure audio session is active before playing
+        if !audioSessionActivated {
+            print("🔊 Setting up audio session before playing")
+            setupAudioSession()
         }
+
+        print("🎵 Creating AVPlayer with URL")
+        let playerItem = AVPlayerItem(url: url)
+        musicPlayer = AVPlayer(playerItem: playerItem)
+        musicPlayer?.volume = 1.0
+
+        // Add observer to track playback status
+        if let player = musicPlayer {
+            print("👀 Adding status observer")
+            let observer = player.observe(\.status) { player, _ in
+                print("🎬 AVPlayer status changed: \(player.status.rawValue)")
+                switch player.status {
+                case .readyToPlay:
+                    print("✅ Player ready to play")
+                case .failed:
+                    print("❌ Player failed: \(player.error?.localizedDescription ?? "Unknown")")
+                case .unknown:
+                    print("❓ Player status unknown")
+                @unknown default:
+                    print("⚠️ Unknown player status")
+                }
+            }
+            // Store observer to prevent deallocation
+            objc_setAssociatedObject(player, "statusObserver", observer, .OBJC_ASSOCIATION_RETAIN)
+        }
+
+        print("▶️ Calling play()")
+        musicPlayer?.play()
+
+        // Check immediately
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let player = self.musicPlayer {
+                print("🎵 After 0.1s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
+            }
+        }
+
+        // Check after 1 second
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            if let player = self.musicPlayer {
+                print("🎵 After 1.0s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
+            }
+        }
+
+        print("✅ Playing music with AVPlayer: \(music.rawValue), isPlaying: \(musicPlayer?.timeControlStatus == .playing)")
     }
     
     private func playSystemSound() {
@@ -282,11 +409,42 @@ class AlarmManager {
         content.title = title
         content.body = body
         content.sound = .default
-        
+
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
+
         UNUserNotificationCenter.current().add(request)
+    }
+
+    // MARK: - Background Task Management
+    private func requestBackgroundTask() {
+        backgroundTaskID = UIApplication.shared.beginBackgroundTask { [weak self] in
+            self?.endBackgroundTask()
+        }
+        print("Background task requested: \(backgroundTaskID.rawValue)")
+    }
+
+    private func endBackgroundTask() {
+        if backgroundTaskID != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTaskID)
+            backgroundTaskID = .invalid
+            print("Background task ended")
+        }
+    }
+
+    // MARK: - AVAudioPlayerDelegate
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag {
+            print("Audio finished playing successfully")
+        } else {
+            print("Audio playback interrupted")
+        }
+    }
+
+    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+        if let error = error {
+            print("Audio decode error: \(error)")
+        }
     }
 }
 
