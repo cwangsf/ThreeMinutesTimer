@@ -33,6 +33,8 @@ class AlarmManager {
     var timeRemaining = "3:00"
     var soundA: AlarmSound = .bell
     var soundB: AlarmSound = .chime
+    var musicA: MusicTrack = .musicA
+    var musicB: MusicTrack = .musicB
     var themeColor: ThemeColor {
         didSet {
             UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
@@ -41,8 +43,8 @@ class AlarmManager {
 
     private var timer: Timer?
     private var currentSession: AlarmSession?
-    private var secondsRemaining = 10 // 3 minutes
-    private let intervalDuration = 10 // 3 minutes in seconds
+    private var secondsRemaining = 180 // 3 minutes
+    private let intervalDuration = 180 // 3 minutes in seconds
     private let totalIntervals = 10
     private var audioPlayer: AVAudioPlayer?
     private var intervalStartTime: Date?
@@ -105,8 +107,8 @@ class AlarmManager {
                 return
             }
 
-            // Play sound for current interval since we just entered it
-            playCurrentSound()
+            // Play music for current interval since we just entered it
+            playCurrentMusic()
         }
 
         // Calculate seconds into current interval
@@ -129,7 +131,7 @@ class AlarmManager {
         sessionStartTime = Date()
         intervalStartTime = Date()
         startTimer()
-        playCurrentSound()
+        playCurrentMusic()
     }
     
     func pause() {
@@ -137,6 +139,7 @@ class AlarmManager {
         timer?.invalidate()
         timer = nil
         audioPlayer?.stop()
+        audioPlayer = nil
     }
     
     func stop() {
@@ -144,6 +147,7 @@ class AlarmManager {
         timer?.invalidate()
         timer = nil
         audioPlayer?.stop()
+        audioPlayer = nil
         currentInterval = 0
         progress = 0
         secondsRemaining = intervalDuration
@@ -175,16 +179,23 @@ class AlarmManager {
     }
     
     private func completeInterval() {
+        // Play alert sound at the end of the interval
+        playAlertSound()
+
         currentInterval += 1
 
         if currentInterval >= totalIntervals {
             // Session completed
             completeSession()
         } else {
-            // Start next interval
+            // Start next interval with music
             secondsRemaining = intervalDuration
             intervalStartTime = Date()
-            playCurrentSound()
+
+            // Schedule music to play after alert finishes
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.playCurrentMusic()
+            }
         }
     }
     
@@ -193,6 +204,7 @@ class AlarmManager {
         timer?.invalidate()
         timer = nil
         audioPlayer?.stop()
+        audioPlayer = nil
 
         if let session = currentSession {
             session.endTime = Date()
@@ -219,24 +231,44 @@ class AlarmManager {
         timeRemaining = String(format: "%d:%02d", minutes, seconds)
     }
     
-    private func playCurrentSound() {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-        playSound(sound)
+    private func playCurrentMusic() {
+        let music = (currentInterval % 2 == 0) ? musicA : musicB
+        playMusic(music)
     }
-    
-    private func playSound(_ sound: AlarmSound) {
+
+    private func playAlertSound() {
+        let sound = (currentInterval % 2 == 0) ? soundA : soundB
+        playAlertSoundWithType(sound)
+    }
+
+    private func playAlertSoundWithType(_ sound: AlarmSound) {
         guard let url = Bundle.main.url(forResource: sound.filename, withExtension: "mp3") else {
             // Fallback to system sound
             playSystemSound()
             return
         }
-        
+
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.play()
         } catch {
-            print("Error playing sound: \(error)")
+            print("Error playing alert sound: \(error)")
             playSystemSound()
+        }
+    }
+
+    private func playMusic(_ music: MusicTrack) {
+        guard let url = Bundle.main.url(forResource: music.filename, withExtension: "mp3") else {
+            print("Music file not found: \(music.filename)")
+            return
+        }
+
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.numberOfLoops = 0 // Play once
+            audioPlayer?.play()
+        } catch {
+            print("Error playing music: \(error)")
         }
     }
     
@@ -273,6 +305,19 @@ enum AlarmSound: String, CaseIterable {
         case .beep: return "beep"
         case .tone: return "tone"
         case .alert: return "alert"
+        }
+    }
+}
+
+// MARK: - Music Tracks
+enum MusicTrack: String, CaseIterable {
+    case musicA = "Music A"
+    case musicB = "Music B"
+
+    var filename: String {
+        switch self {
+        case .musicA: return "musicA"
+        case .musicB: return "musicB"
         }
     }
 }
