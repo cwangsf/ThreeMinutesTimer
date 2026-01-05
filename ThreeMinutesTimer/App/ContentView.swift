@@ -20,12 +20,8 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background Image
-                Image("Portrait1")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-
+                getBackgroundImage()
+                
                 ScrollView {
                     VStack(spacing: 20) {
                     // Header
@@ -211,6 +207,15 @@ struct ContentView: View {
 
     private func requestNotificationPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+    
+    //TODO: get the background image list and rotate them, the background color with change by extracting the main color's opposite color
+    private func getBackgroundImage() -> some View {
+        // Background Image
+        Image("Portrait1")
+            .resizable()
+            .scaledToFill()
+            .ignoresSafeArea()
     }
 }
 
