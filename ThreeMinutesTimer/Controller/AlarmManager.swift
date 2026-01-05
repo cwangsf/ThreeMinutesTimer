@@ -13,62 +13,40 @@ import SwiftUI
 import Dispatch
 import UIKit
 import ObjectiveC
-
-// MARK: - Models
-@Model
-class AlarmSession {
-    var id = UUID()
-    var startTime = Date()
-    var endTime: Date?
-    var totalIntervals = 10
-    var completedIntervals = 0
-    var isCompleted = false
-    
-    init() {}
-}
+import ThreeMinutesTimerKit
 
 // MARK: - Alarm Manager
 @Observable
 class AlarmManager: NSObject, AVAudioPlayerDelegate {
-    var isRunning = false
-    var currentInterval = 0
-    var progress: Double = 0
-    var timeRemaining = "3:00"
+    // Timer core (shared business logic)
+    private var timerCore = TimerCore()
+
+    // Public properties delegated to TimerCore
+    var isRunning: Bool { timerCore.isRunning }
+    var currentInterval: Int { timerCore.currentInterval }
+    var progress: Double { timerCore.progress }
+    var timeRemaining: String { timerCore.timeRemaining }
+    var statusText: String { timerCore.statusText }
+    var secondsRemaining: Int { timerCore.secondsRemaining }
+
+    // Audio preferences
     var soundA: AlarmSound = .bell
     var soundB: AlarmSound = .chime
-    var musicA: MusicTrack = .musicA
-    var musicB: MusicTrack = .musicB
+    var musicA: BackgrounMusic = .musicA
+    var musicB: BackgrounMusic = .musicB
     var themeColor: ThemeColor {
         didSet {
             UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
         }
     }
 
-    private var timer: Timer?
+    // Platform-specific (iOS)
     private var dispatchTimer: DispatchSourceTimer?
-    private var currentSession: AlarmSession?
-    var secondsRemaining = 180 // 3 minutes
-    private let intervalDuration = 180 // 3 minutes in seconds
-    private let totalIntervals = 10
     private var musicPlayer: AVPlayer?
     private var alertPlayer: AVAudioPlayer?
     private var audioSessionActivated = false
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
-    private var intervalStartTime: Date?
-    private var sessionStartTime: Date?
-    
-    var statusText: String {
-        if !isRunning && currentInterval == 0 {
-            return "Ready to start"
-        } else if !isRunning && currentInterval > 0 {
-            return "Paused"
-        } else if currentInterval >= totalIntervals {
-            return "Session completed!"
-        } else {
-            return "Interval \(currentInterval + 1) active"
-        }
-    }
-    
+
     var currentSoundName: String {
         let sound = (currentInterval % 2 == 0) ? soundA : soundB
         return sound.rawValue
@@ -86,8 +64,39 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         // Initialize NSObject
         super.init()
 
+        // Set up TimerCore callbacks
+        setupTimerCoreCallbacks()
+
         setupAudioSession()
         setupAudioSessionInterruptionHandling()
+    }
+
+    private func setupTimerCoreCallbacks() {
+        timerCore.onIntervalComplete = { [weak self] completedInterval in
+            guard let self = self else { return }
+            self.playAlertSound()
+            // Schedule music to play after alert finishes
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.playCurrentMusic()
+            }
+        }
+
+        timerCore.onSessionComplete = { [weak self] in
+            guard let self = self else { return }
+            self.cleanupSession()
+            self.scheduleNotification(title: "Session Complete!", body: "Your 30-minute interval session has finished.")
+        }
+
+        timerCore.onTimerTick = { [weak self] in
+            guard let self = self else { return }
+            // Check if player is paused but we're still running, resume it
+            if let player = self.musicPlayer, self.isRunning {
+                if player.timeControlStatus == .paused {
+                    print("⚠️ Player was paused, resuming...")
+                    player.play()
+                }
+            }
+        }
     }
 
     private func setupAudioSessionInterruptionHandling() {
@@ -139,89 +148,54 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     }
 
     func handleAppReturningToForeground() {
-        guard isRunning, let startTime = intervalStartTime else { return }
-
-        // Recalculate time based on actual elapsed time
-        let elapsed = Date().timeIntervalSince(startTime)
-        let totalElapsedSeconds = Int(elapsed)
-
-        // Check if we missed any intervals
-        let missedIntervals = totalElapsedSeconds / intervalDuration
-
-        if missedIntervals > 0 {
-            // We missed one or more intervals while in background
-            currentInterval += missedIntervals
-
-            if currentInterval >= totalIntervals {
-                completeSession()
-                return
-            }
-
-            // Play music for current interval since we just entered it
+        timerCore.handleAppReturningToForeground()
+        // Play music if we transitioned to a new interval
+        if isRunning {
             playCurrentMusic()
         }
-
-        // Calculate seconds into current interval
-        let secondsIntoInterval = totalElapsedSeconds % intervalDuration
-        secondsRemaining = intervalDuration - secondsIntoInterval
-
-        if secondsRemaining <= 0 {
-            completeInterval()
-        } else {
-            updateProgress()
-            updateTimeRemaining()
-        }
     }
-    
+
     func startSession(session: AlarmSession) {
-        currentSession = session
-        currentInterval = 0
-        secondsRemaining = intervalDuration
-        isRunning = true
-        sessionStartTime = Date()
-        intervalStartTime = Date()
+        timerCore.startSession(session: session)
         setupAudioSession()
         requestBackgroundTask()
         startTimer()
         playCurrentMusic()
     }
-    
+
     func pause() {
-        isRunning = false
-        timer?.invalidate()
-        timer = nil
-        dispatchTimer?.cancel()
-        dispatchTimer = nil
+        timerCore.pause()
+        stopTimer()
         musicPlayer?.pause()
         musicPlayer = nil
         alertPlayer?.stop()
         alertPlayer = nil
         endBackgroundTask()
     }
-    
+
     func stop() {
-        isRunning = false
-        timer?.invalidate()
-        timer = nil
-        dispatchTimer?.cancel()
-        dispatchTimer = nil
+        timerCore.stop()
+        stopTimer()
+        cleanupAudio()
+        endBackgroundTask()
+    }
+
+    private func cleanupSession() {
+        stopTimer()
+        cleanupAudio()
+        endBackgroundTask()
+    }
+
+    private func cleanupAudio() {
         musicPlayer?.pause()
         musicPlayer = nil
         alertPlayer?.stop()
         alertPlayer = nil
-        currentInterval = 0
-        progress = 0
-        secondsRemaining = intervalDuration
-        updateTimeRemaining()
-        endBackgroundTask()
+    }
 
-        if let session = currentSession {
-            session.endTime = Date()
-            session.completedIntervals = currentInterval
-        }
-        currentSession = nil
-        intervalStartTime = nil
-        sessionStartTime = nil
+    private func stopTimer() {
+        dispatchTimer?.cancel()
+        dispatchTimer = nil
     }
     
     private func startTimer() {
@@ -230,86 +204,10 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         dispatchTimer?.schedule(wallDeadline: .now(), repeating: 1.0)
         dispatchTimer?.setEventHandler { [weak self] in
             DispatchQueue.main.async {
-                // If player is paused but we're still running, resume it
-                if let player = self?.musicPlayer, self?.isRunning == true {
-                    if player.timeControlStatus == .paused {
-                        print("⚠️ Player was paused, resuming...")
-                        player.play()
-                    }
-                    print("🎵 Timer tick - Player status: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
-                }
-                self?.updateTimer()
+                self?.timerCore.updateTimer()
             }
         }
         dispatchTimer?.resume()
-    }
-    
-    private func updateTimer() {
-        secondsRemaining -= 1
-        updateProgress()
-        updateTimeRemaining()
-        
-        if secondsRemaining <= 0 {
-            completeInterval()
-        }
-    }
-    
-    private func completeInterval() {
-        // Play alert sound at the end of the interval
-        playAlertSound()
-
-        currentInterval += 1
-
-        if currentInterval >= totalIntervals {
-            // Session completed
-            completeSession()
-        } else {
-            // Start next interval with music
-            secondsRemaining = intervalDuration
-            intervalStartTime = Date()
-
-            // Schedule music to play after alert finishes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.playCurrentMusic()
-            }
-        }
-    }
-    
-    private func completeSession() {
-        isRunning = false
-        timer?.invalidate()
-        timer = nil
-        dispatchTimer?.cancel()
-        dispatchTimer = nil
-        musicPlayer?.pause()
-        musicPlayer = nil
-        alertPlayer?.stop()
-        alertPlayer = nil
-        endBackgroundTask()
-
-        if let session = currentSession {
-            session.endTime = Date()
-            session.completedIntervals = totalIntervals
-            session.isCompleted = true
-        }
-
-        intervalStartTime = nil
-        sessionStartTime = nil
-
-        // Show completion notification
-        scheduleNotification(title: "Session Complete!", body: "Your 30-minute interval session has finished.")
-    }
-    
-    private func updateProgress() {
-        let totalSeconds = Double(totalIntervals * intervalDuration)
-        let elapsedSeconds = Double(currentInterval * intervalDuration) + Double(intervalDuration - secondsRemaining)
-        progress = elapsedSeconds / totalSeconds
-    }
-    
-    private func updateTimeRemaining() {
-        let minutes = secondsRemaining / 60
-        let seconds = secondsRemaining % 60
-        timeRemaining = String(format: "%d:%02d", minutes, seconds)
     }
     
     private func playCurrentMusic() {
@@ -340,7 +238,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         }
     }
 
-    private func playMusic(_ music: MusicTrack) {
+    private func playMusic(_ music: BackgrounMusic) {
         guard let url = Bundle.main.url(forResource: music.filename, withExtension: "mp3") else {
             print("❌ Music file not found: \(music.filename)")
             return
@@ -444,70 +342,6 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         if let error = error {
             print("Audio decode error: \(error)")
-        }
-    }
-}
-
-// MARK: - Alarm Sounds
-enum AlarmSound: String, CaseIterable {
-    case bell = "Bell"
-    case chime = "Chime"
-    case beep = "Beep"
-    case tone = "Tone"
-    case alert = "Alert"
-
-    var filename: String {
-        switch self {
-        case .bell: return "bell"
-        case .chime: return "chime"
-        case .beep: return "beep"
-        case .tone: return "tone"
-        case .alert: return "alert"
-        }
-    }
-}
-
-// MARK: - Music Tracks
-enum MusicTrack: String, CaseIterable {
-    case musicA = "Music A"
-    case musicB = "Music B"
-
-    var filename: String {
-        switch self {
-        case .musicA: return "musicA"
-        case .musicB: return "musicB"
-        }
-    }
-}
-
-// MARK: - Theme Color
-enum ThemeColor: String, CaseIterable, Codable {
-    case blue = "Blue"
-    case purple = "Purple"
-    case pink = "Pink"
-    case orange = "Orange"
-    case green = "Green"
-    case red = "Red"
-
-    var color: Color {
-        switch self {
-        case .blue: return .blue
-        case .purple: return .purple
-        case .pink: return .pink
-        case .orange: return .orange
-        case .green: return .green
-        case .red: return .red
-        }
-    }
-
-    var gradientColors: [Color] {
-        switch self {
-        case .blue: return [.blue, .cyan]
-        case .purple: return [.purple, .pink]
-        case .pink: return [.pink, .orange]
-        case .orange: return [.orange, .yellow]
-        case .green: return [.green, .mint]
-        case .red: return [.red, .orange]
         }
     }
 }

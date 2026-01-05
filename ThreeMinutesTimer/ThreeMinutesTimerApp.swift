@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import ThreeMinutesTimerKit
 
 // MARK: - Main App
 @main

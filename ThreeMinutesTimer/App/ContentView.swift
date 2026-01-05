@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import ThreeMinutesTimerKit
 
 // MARK: - Content View
 struct ContentView: View {
@@ -201,8 +202,8 @@ struct ContentView: View {
         return sounds[nextIndex]
     }
 
-    private func nextMusic(_ current: MusicTrack) -> MusicTrack {
-        let tracks = MusicTrack.allCases
+    private func nextMusic(_ current: BackgrounMusic) -> BackgrounMusic {
+        let tracks = BackgrounMusic.allCases
         let currentIndex = tracks.firstIndex(of: current) ?? 0
         let nextIndex = (currentIndex + 1) % tracks.count
         return tracks[nextIndex]

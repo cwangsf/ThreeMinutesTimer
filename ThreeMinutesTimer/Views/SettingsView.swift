@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ThreeMinutesTimerKit
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
