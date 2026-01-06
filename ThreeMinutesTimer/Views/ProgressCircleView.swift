@@ -5,6 +5,7 @@
 //  Created by Cynthia Wang on 8/23/25.
 //
 import SwiftUI
+import ThreeMinutesTimerKit
 
 struct ProgressCircleView: View {
     let circleSize: CGFloat = 200
@@ -13,8 +14,8 @@ struct ProgressCircleView: View {
 
     var intervalProgress: Double {
         // Progress for current interval only (0 to 1)
-        let secondsElapsedInInterval = 180 - alarmManager.secondsRemaining
-        return Double(secondsElapsedInInterval) / 180.0
+        let secondsElapsedInInterval = TimerConstants.intervalDuration - alarmManager.secondsRemaining
+        return Double(secondsElapsedInInterval) / Double(TimerConstants.intervalDuration)
     }
 
     var body: some View {
