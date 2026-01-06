@@ -14,6 +14,7 @@ import Dispatch
 import UIKit
 import ObjectiveC
 import ThreeMinutesTimerKit
+import ActivityKit
 
 // MARK: - Alarm Manager
 @Observable
@@ -47,6 +48,10 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     private var audioSessionActivated = false
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
+    // Live Activity
+    private var currentActivity: Activity<TimerWidgetAttributes>?
+    private var liveActivityUpdateCounter = 0
+
     var currentSoundName: String {
         let sound = (currentInterval % 2 == 0) ? soundA : soundB
         return sound.rawValue
@@ -75,6 +80,9 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         timerCore.onIntervalComplete = { [weak self] completedInterval in
             guard let self = self else { return }
             self.playAlertSound()
+            // Update Live Activity immediately when interval changes
+            self.updateLiveActivity()
+            self.liveActivityUpdateCounter = 0  // Reset counter
             // Schedule music to play after alert finishes
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.playCurrentMusic()
@@ -96,7 +104,90 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
                     player.play()
                 }
             }
+            // Update Live Activity every 5 seconds (to avoid rate limiting)
+            self.liveActivityUpdateCounter += 1
+            if self.liveActivityUpdateCounter >= 5 {
+                self.updateLiveActivity()
+                self.liveActivityUpdateCounter = 0
+            }
         }
+    }
+
+    // MARK: - Live Activity Management
+    private func startLiveActivity() {
+        // Check if Live Activities are supported
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            print("⚠️ Live Activities not enabled")
+            return
+        }
+
+        let attributes = TimerWidgetAttributes(sessionStartTime: Date())
+        let contentState = TimerWidgetAttributes.ContentState(
+            currentInterval: currentInterval,
+            totalIntervals: 10,
+            timeRemaining: timeRemaining,
+            secondsRemaining: secondsRemaining,
+            isRunning: isRunning
+        )
+
+        do {
+            currentActivity = try Activity.request(
+                attributes: attributes,
+                content: ActivityContent<TimerWidgetAttributes.ContentState>(
+                    state: contentState,
+                    staleDate: nil
+                )
+            )
+            print("✅ Live Activity started: \(currentActivity?.id ?? "unknown")")
+        } catch {
+            print("❌ Failed to start Live Activity: \(error)")
+        }
+    }
+
+    private func updateLiveActivity() {
+        guard let activity = currentActivity else { return }
+
+        let contentState = TimerWidgetAttributes.ContentState(
+            currentInterval: currentInterval,
+            totalIntervals: 10,
+            timeRemaining: timeRemaining,
+            secondsRemaining: secondsRemaining,
+            isRunning: isRunning
+        )
+
+        Task {
+            await activity.update(
+                ActivityContent<TimerWidgetAttributes.ContentState>(
+                    state: contentState,
+                    staleDate: nil
+                )
+            )
+        }
+    }
+
+    private func endLiveActivity() {
+        guard let activity = currentActivity else { return }
+
+        let finalState = TimerWidgetAttributes.ContentState(
+            currentInterval: currentInterval,
+            totalIntervals: 10,
+            timeRemaining: "0:00",
+            secondsRemaining: 0,
+            isRunning: false
+        )
+
+        Task {
+            await activity.end(
+                ActivityContent<TimerWidgetAttributes.ContentState>(
+                    state: finalState,
+                    staleDate: nil
+                ),
+                dismissalPolicy: .immediate
+            )
+            print("✅ Live Activity ended")
+        }
+
+        currentActivity = nil
     }
 
     private func setupAudioSessionInterruptionHandling() {
@@ -159,8 +250,10 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         timerCore.startSession(session: session)
         setupAudioSession()
         // Background audio keeps app alive - no need for background task
+        liveActivityUpdateCounter = 0  // Reset update counter
         startTimer()
         playCurrentMusic()
+        startLiveActivity()
     }
 
     func pause() {
@@ -170,17 +263,20 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         musicPlayer = nil
         alertPlayer?.stop()
         alertPlayer = nil
+        updateLiveActivity() // Update to show paused state
     }
 
     func stop() {
         timerCore.stop()
         stopTimer()
         cleanupAudio()
+        endLiveActivity()
     }
 
     private func cleanupSession() {
         stopTimer()
         cleanupAudio()
+        endLiveActivity()
     }
 
     private func cleanupAudio() {

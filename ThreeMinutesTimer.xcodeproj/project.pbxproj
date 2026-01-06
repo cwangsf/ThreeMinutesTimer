@@ -8,9 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		26AB5BD62F0BB40900B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5BD52F0BB40900B771AB /* ThreeMinutesTimerKit */; };
+		26AB5C182F0D2AC900B771AB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AB5C172F0D2AC900B771AB /* WidgetKit.framework */; };
+		26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AB5C192F0D2AC900B771AB /* SwiftUI.framework */; };
+		26AB5C292F0D2ACB00B771AB /* TimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		26AB5C272F0D2ACB00B771AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26B557D82E54797B0070552C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AB5C142F0D2AC900B771AB;
+			remoteInfo = TimerWidgetExtension;
+		};
 		26B557F02E54797D0070552C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 26B557D82E54797B0070552C /* Project object */;
@@ -27,7 +38,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		26AB5C2E2F0D2ACB00B771AB /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				26AB5C292F0D2ACB00B771AB /* TimerWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AB5C172F0D2AC900B771AB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		26AB5C192F0D2AC900B771AB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		26B557E02E54797B0070552C /* ThreeMinutesTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThreeMinutesTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B557EF2E54797D0070552C /* ThreeMinutesTimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeMinutesTimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B557F92E54797D0070552C /* ThreeMinutesTimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeMinutesTimerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,9 +69,24 @@
 			);
 			target = 26B557DF2E54797B0070552C /* ThreeMinutesTimer */;
 		};
+		26AB5C2D2F0D2ACB00B771AB /* Exceptions for "TimerWidget" folder in "TimerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		26AB5C1B2F0D2AC900B771AB /* TimerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				26AB5C2D2F0D2ACB00B771AB /* Exceptions for "TimerWidget" folder in "TimerWidgetExtension" target */,
+			);
+			path = TimerWidget;
+			sourceTree = "<group>";
+		};
 		26B557E22E54797B0070552C /* ThreeMinutesTimer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -65,6 +108,16 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		26AB5C122F0D2AC900B771AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */,
+				26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */,
+				26AB5C182F0D2AC900B771AB /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26B557DD2E54797B0070552C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -90,12 +143,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		26AB5C162F0D2AC900B771AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				26AB5C172F0D2AC900B771AB /* WidgetKit.framework */,
+				26AB5C192F0D2AC900B771AB /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		26B557D72E54797B0070552C = {
 			isa = PBXGroup;
 			children = (
 				26B557E22E54797B0070552C /* ThreeMinutesTimer */,
 				26B557F22E54797D0070552C /* ThreeMinutesTimerTests */,
 				26B557FC2E54797D0070552C /* ThreeMinutesTimerUITests */,
+				26AB5C1B2F0D2AC900B771AB /* TimerWidget */,
+				26AB5C162F0D2AC900B771AB /* Frameworks */,
 				26B557E12E54797B0070552C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -106,6 +170,7 @@
 				26B557E02E54797B0070552C /* ThreeMinutesTimer.app */,
 				26B557EF2E54797D0070552C /* ThreeMinutesTimerTests.xctest */,
 				26B557F92E54797D0070552C /* ThreeMinutesTimerUITests.xctest */,
+				26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -113,6 +178,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AB5C2A2F0D2ACB00B771AB /* Build configuration list for PBXNativeTarget "TimerWidgetExtension" */;
+			buildPhases = (
+				26AB5C112F0D2AC900B771AB /* Sources */,
+				26AB5C122F0D2AC900B771AB /* Frameworks */,
+				26AB5C132F0D2AC900B771AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				26AB5C1B2F0D2AC900B771AB /* TimerWidget */,
+			);
+			name = TimerWidgetExtension;
+			packageProductDependencies = (
+				26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */,
+			);
+			productName = TimerWidgetExtension;
+			productReference = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		26B557DF2E54797B0070552C /* ThreeMinutesTimer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 26B558032E54797D0070552C /* Build configuration list for PBXNativeTarget "ThreeMinutesTimer" */;
@@ -120,10 +208,12 @@
 				26B557DC2E54797B0070552C /* Sources */,
 				26B557DD2E54797B0070552C /* Frameworks */,
 				26B557DE2E54797B0070552C /* Resources */,
+				26AB5C2E2F0D2ACB00B771AB /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				26AB5C282F0D2ACB00B771AB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				26B557E22E54797B0070552C /* ThreeMinutesTimer */,
@@ -189,9 +279,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					26AB5C142F0D2AC900B771AB = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					26B557DF2E54797B0070552C = {
 						CreatedOnToolsVersion = 26.0;
 					};
@@ -226,11 +319,19 @@
 				26B557DF2E54797B0070552C /* ThreeMinutesTimer */,
 				26B557EE2E54797D0070552C /* ThreeMinutesTimerTests */,
 				26B557F82E54797D0070552C /* ThreeMinutesTimerUITests */,
+				26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		26AB5C132F0D2AC900B771AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26B557DE2E54797B0070552C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -255,6 +356,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		26AB5C112F0D2AC900B771AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26B557DC2E54797B0070552C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -279,6 +387,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		26AB5C282F0D2ACB00B771AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */;
+			targetProxy = 26AB5C272F0D2ACB00B771AB /* PBXContainerItemProxy */;
+		};
 		26B557F12E54797D0070552C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 26B557DF2E54797B0070552C /* ThreeMinutesTimer */;
@@ -292,6 +405,68 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		26AB5C2B2F0D2ACB00B771AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TimerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TimerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cwang.ThreeMinutesTimer.TimerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		26AB5C2C2F0D2ACB00B771AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TimerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TimerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cwang.ThreeMinutesTimer.TimerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		26B558012E54797D0070552C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -428,6 +603,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -462,6 +638,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -564,6 +741,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		26AB5C2A2F0D2ACB00B771AB /* Build configuration list for PBXNativeTarget "TimerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AB5C2B2F0D2ACB00B771AB /* Debug */,
+				26AB5C2C2F0D2ACB00B771AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		26B557DB2E54797B0070552C /* Build configuration list for PBXProject "ThreeMinutesTimer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -612,6 +798,11 @@
 /* Begin XCSwiftPackageProductDependency section */
 		26AB5BD52F0BB40900B771AB /* ThreeMinutesTimerKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = ThreeMinutesTimerKit;
+		};
+		26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
 			productName = ThreeMinutesTimerKit;
 		};
 /* End XCSwiftPackageProductDependency section */
