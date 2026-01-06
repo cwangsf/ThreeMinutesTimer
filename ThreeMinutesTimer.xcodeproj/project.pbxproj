@@ -11,6 +11,7 @@
 		26AB5C182F0D2AC900B771AB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AB5C172F0D2AC900B771AB /* WidgetKit.framework */; };
 		26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AB5C192F0D2AC900B771AB /* SwiftUI.framework */; };
 		26AB5C292F0D2ACB00B771AB /* TimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */,
 				26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */,
 				26AB5C182F0D2AC900B771AB /* WidgetKit.framework in Frameworks */,
 			);
@@ -193,6 +195,7 @@
 			);
 			name = TimerWidgetExtension;
 			packageProductDependencies = (
+				26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */,
 			);
 			productName = TimerWidgetExtension;
 			productReference = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */;
@@ -600,6 +603,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -634,6 +638,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -793,6 +798,11 @@
 /* Begin XCSwiftPackageProductDependency section */
 		26AB5BD52F0BB40900B771AB /* ThreeMinutesTimerKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = ThreeMinutesTimerKit;
+		};
+		26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
 			productName = ThreeMinutesTimerKit;
 		};
 /* End XCSwiftPackageProductDependency section */

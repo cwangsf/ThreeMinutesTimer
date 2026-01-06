@@ -18,7 +18,10 @@ let package = Package(
     targets: [
         .target(
             name: "ThreeMinutesTimerKit",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                .enableUpcomingFeature("BareSlashRegexLiterals")
+            ]),
         .testTarget(
             name: "ThreeMinutesTimerKitTests",
             dependencies: ["ThreeMinutesTimerKit"]),
