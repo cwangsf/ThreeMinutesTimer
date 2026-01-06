@@ -50,6 +50,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
 
     // Live Activity
     private var currentActivity: Activity<TimerWidgetAttributes>?
+    private var liveActivityUpdateCounter = 0
 
     var currentSoundName: String {
         let sound = (currentInterval % 2 == 0) ? soundA : soundB
@@ -79,6 +80,9 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         timerCore.onIntervalComplete = { [weak self] completedInterval in
             guard let self = self else { return }
             self.playAlertSound()
+            // Update Live Activity immediately when interval changes
+            self.updateLiveActivity()
+            self.liveActivityUpdateCounter = 0  // Reset counter
             // Schedule music to play after alert finishes
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.playCurrentMusic()
@@ -100,8 +104,12 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
                     player.play()
                 }
             }
-            // Update Live Activity every second
-            self.updateLiveActivity()
+            // Update Live Activity every 5 seconds (to avoid rate limiting)
+            self.liveActivityUpdateCounter += 1
+            if self.liveActivityUpdateCounter >= 5 {
+                self.updateLiveActivity()
+                self.liveActivityUpdateCounter = 0
+            }
         }
     }
 
@@ -242,6 +250,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         timerCore.startSession(session: session)
         setupAudioSession()
         // Background audio keeps app alive - no need for background task
+        liveActivityUpdateCounter = 0  // Reset update counter
         startTimer()
         playCurrentMusic()
         startLiveActivity()
