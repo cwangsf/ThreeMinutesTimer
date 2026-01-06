@@ -158,7 +158,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     func startSession(session: AlarmSession) {
         timerCore.startSession(session: session)
         setupAudioSession()
-        requestBackgroundTask()
+        // Background audio keeps app alive - no need for background task
         startTimer()
         playCurrentMusic()
     }
@@ -170,20 +170,17 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         musicPlayer = nil
         alertPlayer?.stop()
         alertPlayer = nil
-        endBackgroundTask()
     }
 
     func stop() {
         timerCore.stop()
         stopTimer()
         cleanupAudio()
-        endBackgroundTask()
     }
 
     private func cleanupSession() {
         stopTimer()
         cleanupAudio()
-        endBackgroundTask()
     }
 
     private func cleanupAudio() {

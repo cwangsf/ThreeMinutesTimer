@@ -33,9 +33,22 @@
 		26B557F92E54797D0070552C /* ThreeMinutesTimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeMinutesTimerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		26AB5C102F0D1F0500B771AB /* Exceptions for "ThreeMinutesTimer" folder in "ThreeMinutesTimer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 26B557DF2E54797B0070552C /* ThreeMinutesTimer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		26B557E22E54797B0070552C /* ThreeMinutesTimer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				26AB5C102F0D1F0500B771AB /* Exceptions for "ThreeMinutesTimer" folder in "ThreeMinutesTimer" target */,
+			);
 			path = ThreeMinutesTimer;
 			sourceTree = "<group>";
 		};
@@ -414,7 +427,7 @@
 				DEVELOPMENT_TEAM = 83869ZY58J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -448,7 +461,7 @@
 				DEVELOPMENT_TEAM = 83869ZY58J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = ThreeMinutesTimer/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = audio;
