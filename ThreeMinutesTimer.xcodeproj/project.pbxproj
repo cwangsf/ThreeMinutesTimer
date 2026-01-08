@@ -12,6 +12,9 @@
 		26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AB5C192F0D2AC900B771AB /* SwiftUI.framework */; };
 		26AB5C292F0D2ACB00B771AB /* TimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */; };
+		26AB5D162F0EFD8700B771AB /* TimerWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		26AB5D222F0EFDF200B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5D212F0EFDF200B771AB /* ThreeMinutesTimerKit */; };
+		26AB5D2A2F0FAC4900B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -21,6 +24,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = 26AB5C142F0D2AC900B771AB;
 			remoteInfo = TimerWidgetExtension;
+		};
+		26AB5D032F0EFD8700B771AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26B557D82E54797B0070552C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AB5CF52F0EFD8500B771AB;
+			remoteInfo = "TimerWatch Watch App";
+		};
+		26AB5D0D2F0EFD8700B771AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26B557D82E54797B0070552C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AB5CF52F0EFD8500B771AB;
+			remoteInfo = "TimerWatch Watch App";
+		};
+		26AB5D142F0EFD8700B771AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26B557D82E54797B0070552C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AB5CF52F0EFD8500B771AB;
+			remoteInfo = "TimerWatch Watch App";
 		};
 		26B557F02E54797D0070552C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -50,12 +74,26 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		26AB5D172F0EFD8700B771AB /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				26AB5D162F0EFD8700B771AB /* TimerWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		26AB5C172F0D2AC900B771AB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		26AB5C192F0D2AC900B771AB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TimerWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AB5D022F0EFD8700B771AB /* TimerWatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TimerWatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AB5D0C2F0EFD8700B771AB /* TimerWatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TimerWatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B557E02E54797B0070552C /* ThreeMinutesTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThreeMinutesTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B557EF2E54797D0070552C /* ThreeMinutesTimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeMinutesTimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B557F92E54797D0070552C /* ThreeMinutesTimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeMinutesTimerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +125,21 @@
 			path = TimerWidget;
 			sourceTree = "<group>";
 		};
+		26AB5CF72F0EFD8500B771AB /* TimerWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "TimerWatch Watch App";
+			sourceTree = "<group>";
+		};
+		26AB5D052F0EFD8700B771AB /* TimerWatch Watch AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "TimerWatch Watch AppTests";
+			sourceTree = "<group>";
+		};
+		26AB5D0F2F0EFD8700B771AB /* TimerWatch Watch AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "TimerWatch Watch AppUITests";
+			sourceTree = "<group>";
+		};
 		26B557E22E54797B0070552C /* ThreeMinutesTimer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -115,6 +168,29 @@
 				26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */,
 				26AB5C1A2F0D2AC900B771AB /* SwiftUI.framework in Frameworks */,
 				26AB5C182F0D2AC900B771AB /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5CF32F0EFD8500B771AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26AB5D2A2F0FAC4900B771AB /* ThreeMinutesTimerKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5CFF2F0EFD8700B771AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5D092F0EFD8700B771AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26AB5D222F0EFDF200B771AB /* ThreeMinutesTimerKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +235,9 @@
 				26B557F22E54797D0070552C /* ThreeMinutesTimerTests */,
 				26B557FC2E54797D0070552C /* ThreeMinutesTimerUITests */,
 				26AB5C1B2F0D2AC900B771AB /* TimerWidget */,
+				26AB5CF72F0EFD8500B771AB /* TimerWatch Watch App */,
+				26AB5D052F0EFD8700B771AB /* TimerWatch Watch AppTests */,
+				26AB5D0F2F0EFD8700B771AB /* TimerWatch Watch AppUITests */,
 				26AB5C162F0D2AC900B771AB /* Frameworks */,
 				26B557E12E54797B0070552C /* Products */,
 			);
@@ -171,6 +250,9 @@
 				26B557EF2E54797D0070552C /* ThreeMinutesTimerTests.xctest */,
 				26B557F92E54797D0070552C /* ThreeMinutesTimerUITests.xctest */,
 				26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */,
+				26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */,
+				26AB5D022F0EFD8700B771AB /* TimerWatch Watch AppTests.xctest */,
+				26AB5D0C2F0EFD8700B771AB /* TimerWatch Watch AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -201,6 +283,76 @@
 			productReference = 26AB5C152F0D2AC900B771AB /* TimerWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		26AB5CF52F0EFD8500B771AB /* TimerWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AB5D1E2F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch App" */;
+			buildPhases = (
+				26AB5CF22F0EFD8500B771AB /* Sources */,
+				26AB5CF32F0EFD8500B771AB /* Frameworks */,
+				26AB5CF42F0EFD8500B771AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				26AB5CF72F0EFD8500B771AB /* TimerWatch Watch App */,
+			);
+			name = "TimerWatch Watch App";
+			packageProductDependencies = (
+				26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */,
+			);
+			productName = "TimerWatch Watch App";
+			productReference = 26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		26AB5D012F0EFD8700B771AB /* TimerWatch Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AB5D1F2F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch AppTests" */;
+			buildPhases = (
+				26AB5CFE2F0EFD8700B771AB /* Sources */,
+				26AB5CFF2F0EFD8700B771AB /* Frameworks */,
+				26AB5D002F0EFD8700B771AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				26AB5D042F0EFD8700B771AB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				26AB5D052F0EFD8700B771AB /* TimerWatch Watch AppTests */,
+			);
+			name = "TimerWatch Watch AppTests";
+			packageProductDependencies = (
+			);
+			productName = "TimerWatch Watch AppTests";
+			productReference = 26AB5D022F0EFD8700B771AB /* TimerWatch Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		26AB5D0B2F0EFD8700B771AB /* TimerWatch Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AB5D202F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch AppUITests" */;
+			buildPhases = (
+				26AB5D082F0EFD8700B771AB /* Sources */,
+				26AB5D092F0EFD8700B771AB /* Frameworks */,
+				26AB5D0A2F0EFD8700B771AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				26AB5D0E2F0EFD8700B771AB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				26AB5D0F2F0EFD8700B771AB /* TimerWatch Watch AppUITests */,
+			);
+			name = "TimerWatch Watch AppUITests";
+			packageProductDependencies = (
+				26AB5D212F0EFDF200B771AB /* ThreeMinutesTimerKit */,
+			);
+			productName = "TimerWatch Watch AppUITests";
+			productReference = 26AB5D0C2F0EFD8700B771AB /* TimerWatch Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		26B557DF2E54797B0070552C /* ThreeMinutesTimer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 26B558032E54797D0070552C /* Build configuration list for PBXNativeTarget "ThreeMinutesTimer" */;
@@ -209,11 +361,13 @@
 				26B557DD2E54797B0070552C /* Frameworks */,
 				26B557DE2E54797B0070552C /* Resources */,
 				26AB5C2E2F0D2ACB00B771AB /* Embed Foundation Extensions */,
+				26AB5D172F0EFD8700B771AB /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				26AB5C282F0D2ACB00B771AB /* PBXTargetDependency */,
+				26AB5D152F0EFD8700B771AB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				26B557E22E54797B0070552C /* ThreeMinutesTimer */,
@@ -285,6 +439,17 @@
 					26AB5C142F0D2AC900B771AB = {
 						CreatedOnToolsVersion = 26.2;
 					};
+					26AB5CF52F0EFD8500B771AB = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					26AB5D012F0EFD8700B771AB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 26AB5CF52F0EFD8500B771AB;
+					};
+					26AB5D0B2F0EFD8700B771AB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 26AB5CF52F0EFD8500B771AB;
+					};
 					26B557DF2E54797B0070552C = {
 						CreatedOnToolsVersion = 26.0;
 					};
@@ -320,12 +485,36 @@
 				26B557EE2E54797D0070552C /* ThreeMinutesTimerTests */,
 				26B557F82E54797D0070552C /* ThreeMinutesTimerUITests */,
 				26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */,
+				26AB5CF52F0EFD8500B771AB /* TimerWatch Watch App */,
+				26AB5D012F0EFD8700B771AB /* TimerWatch Watch AppTests */,
+				26AB5D0B2F0EFD8700B771AB /* TimerWatch Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		26AB5C132F0D2AC900B771AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5CF42F0EFD8500B771AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5D002F0EFD8700B771AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5D0A2F0EFD8700B771AB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -363,6 +552,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		26AB5CF22F0EFD8500B771AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5CFE2F0EFD8700B771AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AB5D082F0EFD8700B771AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26B557DC2E54797B0070552C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -391,6 +601,21 @@
 			isa = PBXTargetDependency;
 			target = 26AB5C142F0D2AC900B771AB /* TimerWidgetExtension */;
 			targetProxy = 26AB5C272F0D2ACB00B771AB /* PBXContainerItemProxy */;
+		};
+		26AB5D042F0EFD8700B771AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AB5CF52F0EFD8500B771AB /* TimerWatch Watch App */;
+			targetProxy = 26AB5D032F0EFD8700B771AB /* PBXContainerItemProxy */;
+		};
+		26AB5D0E2F0EFD8700B771AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AB5CF52F0EFD8500B771AB /* TimerWatch Watch App */;
+			targetProxy = 26AB5D0D2F0EFD8700B771AB /* PBXContainerItemProxy */;
+		};
+		26AB5D152F0EFD8700B771AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AB5CF52F0EFD8500B771AB /* TimerWatch Watch App */;
+			targetProxy = 26AB5D142F0EFD8700B771AB /* PBXContainerItemProxy */;
 		};
 		26B557F12E54797D0070552C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -464,6 +689,166 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		26AB5D182F0EFD8700B771AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "TimerWatch Watch App/TimerWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TimerWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = TimerWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = cwang.ThreeMinutesTimer;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cwang.ThreeMinutesTimer.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		26AB5D192F0EFD8700B771AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "TimerWatch Watch App/TimerWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TimerWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = TimerWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = cwang.ThreeMinutesTimer;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cwang.ThreeMinutesTimer.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		26AB5D1A2F0EFD8700B771AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cwang.ThreeMinutesTimer.TimerWatch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimerWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TimerWatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		26AB5D1B2F0EFD8700B771AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cwang.ThreeMinutesTimer.TimerWatch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimerWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TimerWatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		26AB5D1C2F0EFD8700B771AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cwang.ThreeMinutesTimer.TimerWatch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "TimerWatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		26AB5D1D2F0EFD8700B771AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 83869ZY58J;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cwang.ThreeMinutesTimer.TimerWatch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "TimerWatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
@@ -750,6 +1135,33 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		26AB5D1E2F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AB5D182F0EFD8700B771AB /* Debug */,
+				26AB5D192F0EFD8700B771AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26AB5D1F2F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AB5D1A2F0EFD8700B771AB /* Debug */,
+				26AB5D1B2F0EFD8700B771AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26AB5D202F0EFD8700B771AB /* Build configuration list for PBXNativeTarget "TimerWatch Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AB5D1C2F0EFD8700B771AB /* Debug */,
+				26AB5D1D2F0EFD8700B771AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		26B557DB2E54797B0070552C /* Build configuration list for PBXProject "ThreeMinutesTimer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -801,6 +1213,16 @@
 			productName = ThreeMinutesTimerKit;
 		};
 		26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
+			productName = ThreeMinutesTimerKit;
+		};
+		26AB5D212F0EFDF200B771AB /* ThreeMinutesTimerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
+			productName = ThreeMinutesTimerKit;
+		};
+		26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
 			productName = ThreeMinutesTimerKit;

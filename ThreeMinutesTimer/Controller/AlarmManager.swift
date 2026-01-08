@@ -38,6 +38,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     var themeColor: ThemeColor {
         didSet {
             UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
+            sendPreferencesToWatch()
         }
     }
 
@@ -51,6 +52,9 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     // Live Activity
     private var currentActivity: Activity<TimerWidgetAttributes>?
     private var liveActivityUpdateCounter = 0
+
+    // Watch Connectivity
+    private let watchConnectivity = WatchConnectivityManager.shared
 
     var currentSoundName: String {
         let sound = (currentInterval % 2 == 0) ? soundA : soundB
@@ -71,6 +75,9 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
 
         // Set up TimerCore callbacks
         setupTimerCoreCallbacks()
+
+        // Set up Watch Connectivity callbacks
+        setupWatchConnectivityCallbacks()
 
         setupAudioSession()
         setupAudioSessionInterruptionHandling()
@@ -110,7 +117,68 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
                 self.updateLiveActivity()
                 self.liveActivityUpdateCounter = 0
             }
+            // Send timer state to watch every 5 seconds as well
+            if self.liveActivityUpdateCounter == 0 {
+                self.sendTimerStateToWatch()
+            }
         }
+    }
+
+    private func setupWatchConnectivityCallbacks() {
+        // Handle timer state updates from watch
+        watchConnectivity.onTimerStateUpdate = { [weak self] message in
+            guard let self = self else { return }
+            print("📥 iOS received timer state from watch: interval \(message.currentInterval), time \(message.timeRemaining)s")
+            // Watch is updating us about its timer state
+            // We could sync our UI here if needed, but for now just log it
+        }
+
+        // Handle session started from watch
+        watchConnectivity.onSessionStarted = { [weak self] message in
+            guard let self = self else { return }
+            print("📥 iOS received session started from watch: \(message.sessionID)")
+            // Watch started a session - we could start our own session here to stay in sync
+        }
+
+        // Handle session completed from watch
+        watchConnectivity.onSessionCompleted = { [weak self] message in
+            guard let self = self else { return }
+            print("📥 iOS received session completed from watch: \(message.sessionID), \(message.completedIntervals) intervals")
+            // Watch completed a session - we could update our history
+        }
+
+        // Handle preferences update from watch (if watch ever changes settings)
+        watchConnectivity.onPreferencesUpdate = { [weak self] message in
+            guard let self = self else { return }
+            print("📥 iOS received preferences update from watch")
+            // Update our settings if watch changed them
+            self.soundA = message.soundA
+            self.soundB = message.soundB
+            self.musicA = message.musicA
+            self.musicB = message.musicB
+            self.themeColor = message.themeColor
+        }
+    }
+
+    private func sendTimerStateToWatch() {
+        let message = TimerStateMessage(
+            currentInterval: currentInterval,
+            timeRemaining: secondsRemaining,
+            isRunning: isRunning,
+            sessionID: timerCore.currentSession?.id
+        )
+        watchConnectivity.sendTimerState(message)
+    }
+
+    private func sendPreferencesToWatch() {
+        let message = PreferencesMessage(
+            soundA: soundA,
+            soundB: soundB,
+            musicA: musicA,
+            musicB: musicB,
+            themeColor: themeColor
+        )
+        watchConnectivity.sendPreferencesUpdate(message)
     }
 
     // MARK: - Live Activity Management
@@ -254,6 +322,13 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         startTimer()
         playCurrentMusic()
         startLiveActivity()
+
+        // Notify watch that session started
+        let message = SessionStartedMessage(
+            sessionID: session.id,
+            startTime: session.startTime
+        )
+        watchConnectivity.sendSessionStarted(message)
     }
 
     func pause() {
@@ -277,6 +352,16 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         stopTimer()
         cleanupAudio()
         endLiveActivity()
+
+        // Notify watch that session completed
+        if let session = timerCore.currentSession {
+            let message = SessionCompletedMessage(
+                sessionID: session.id,
+                completedIntervals: session.completedIntervals,
+                endTime: session.endTime ?? Date()
+            )
+            watchConnectivity.sendSessionCompleted(message)
+        }
     }
 
     private func cleanupAudio() {
