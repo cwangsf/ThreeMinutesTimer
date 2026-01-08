@@ -14,6 +14,7 @@
 		26AB5CC72F0DCC7800B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5CC62F0DCC7800B771AB /* ThreeMinutesTimerKit */; };
 		26AB5D162F0EFD8700B771AB /* TimerWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		26AB5D222F0EFDF200B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5D212F0EFDF200B771AB /* ThreeMinutesTimerKit */; };
+		26AB5D2A2F0FAC4900B771AB /* ThreeMinutesTimerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,6 +175,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26AB5D2A2F0FAC4900B771AB /* ThreeMinutesTimerKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +300,7 @@
 			);
 			name = "TimerWatch Watch App";
 			packageProductDependencies = (
+				26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */,
 			);
 			productName = "TimerWatch Watch App";
 			productReference = 26AB5CF62F0EFD8500B771AB /* TimerWatch Watch App.app */;
@@ -694,11 +697,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "TimerWatch Watch App/TimerWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 83869ZY58J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TimerWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TimerWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = cwang.ThreeMinutesTimer;
@@ -727,11 +732,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "TimerWatch Watch App/TimerWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 83869ZY58J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TimerWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TimerWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = cwang.ThreeMinutesTimer;
@@ -1211,6 +1218,11 @@
 			productName = ThreeMinutesTimerKit;
 		};
 		26AB5D212F0EFDF200B771AB /* ThreeMinutesTimerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
+			productName = ThreeMinutesTimerKit;
+		};
+		26AB5D292F0FAC4900B771AB /* ThreeMinutesTimerKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 26AB5BD42F0BB40900B771AB /* XCLocalSwiftPackageReference "ThreeMinutesTimerKit" */;
 			productName = ThreeMinutesTimerKit;

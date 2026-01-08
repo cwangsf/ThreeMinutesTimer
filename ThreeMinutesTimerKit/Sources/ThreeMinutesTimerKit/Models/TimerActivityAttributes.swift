@@ -2,10 +2,12 @@
 //  TimerActivityAttributes.swift
 //  ThreeMinutesTimerKit
 //
-//  Shared Live Activity attributes
+//  Shared Live Activity attributes (iOS only)
 //
 
 import Foundation
+
+#if os(iOS)
 import ActivityKit
 
 // MARK: - Timer Widget Attributes
@@ -34,3 +36,4 @@ public struct TimerWidgetAttributes: ActivityAttributes {
         self.sessionStartTime = sessionStartTime
     }
 }
+#endif

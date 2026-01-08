@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SwiftData
+import ThreeMinutesTimerKit
 
 @main
 struct TimerWatch_Watch_AppApp: App {
@@ -13,5 +15,6 @@ struct TimerWatch_Watch_AppApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: AlarmSession.self)
     }
 }
