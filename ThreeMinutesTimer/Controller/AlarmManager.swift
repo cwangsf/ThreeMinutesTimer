@@ -18,7 +18,7 @@ import ActivityKit
 
 // MARK: - Alarm Manager
 @Observable
-class AlarmManager: NSObject, AVAudioPlayerDelegate {
+class AlarmManager: NSObject {
     // Timer core (shared business logic)
     private var timerCore = TimerCore()
 
@@ -30,11 +30,35 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     var statusText: String { timerCore.statusText }
     var secondsRemaining: Int { timerCore.secondsRemaining }
 
-    // Audio preferences
-    var soundA: AlarmSound = .bell
-    var soundB: AlarmSound = .chime
-    var musicA: BackgrounMusic = .musicA
-    var musicB: BackgrounMusic = .musicB
+    // Audio preferences (delegated to TimerCore with setters for Watch sync)
+    var soundA: AlarmSound {
+        get { timerCore.soundA }
+        set {
+            timerCore.soundA = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var soundB: AlarmSound {
+        get { timerCore.soundB }
+        set {
+            timerCore.soundB = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var musicA: BackgrounMusic {
+        get { timerCore.musicA }
+        set {
+            timerCore.musicA = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var musicB: BackgrounMusic {
+        get { timerCore.musicB }
+        set {
+            timerCore.musicB = newValue
+            sendPreferencesToWatch()
+        }
+    }
     var themeColor: ThemeColor {
         didSet {
             UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
@@ -45,7 +69,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     // Platform-specific (iOS)
     private var dispatchTimer: DispatchSourceTimer?
     private var musicPlayer: AVPlayer?
-    private var alertPlayer: AVAudioPlayer?
+    private let audioPlaybackManager = AudioPlaybackManager()
     private var audioSessionActivated = false
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
@@ -57,8 +81,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     private let watchConnectivity = WatchConnectivityManager.shared
 
     var currentSoundName: String {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-        return sound.rawValue
+        return timerCore.currentSoundName
     }
     
     override init() {
@@ -152,10 +175,10 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
             guard let self = self else { return }
             print("📥 iOS received preferences update from watch")
             // Update our settings if watch changed them
-            self.soundA = message.soundA
-            self.soundB = message.soundB
-            self.musicA = message.musicA
-            self.musicB = message.musicB
+            self.timerCore.soundA = message.soundA
+            self.timerCore.soundB = message.soundB
+            self.timerCore.musicA = message.musicA
+            self.timerCore.musicB = message.musicB
             self.themeColor = message.themeColor
         }
     }
@@ -336,8 +359,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         stopTimer()
         musicPlayer?.pause()
         musicPlayer = nil
-        alertPlayer?.stop()
-        alertPlayer = nil
+        audioPlaybackManager.stopAlertSound()
         updateLiveActivity() // Update to show paused state
     }
 
@@ -367,8 +389,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     private func cleanupAudio() {
         musicPlayer?.pause()
         musicPlayer = nil
-        alertPlayer?.stop()
-        alertPlayer = nil
+        audioPlaybackManager.stopAlertSound()
     }
 
     private func stopTimer() {
@@ -389,31 +410,13 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     }
     
     private func playCurrentMusic() {
-        let music = (currentInterval % 2 == 0) ? musicA : musicB
+        let music = timerCore.getCurrentMusic()
         playMusic(music)
     }
 
     private func playAlertSound() {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-        playAlertSoundWithType(sound)
-    }
-
-    private func playAlertSoundWithType(_ sound: AlarmSound) {
-        guard let url = Bundle.main.url(forResource: sound.filename, withExtension: "mp3") else {
-            // Fallback to system sound
-            playSystemSound()
-            return
-        }
-
-        do {
-            alertPlayer = try AVAudioPlayer(contentsOf: url)
-            alertPlayer?.delegate = self
-            alertPlayer?.play()
-            print("Playing alert sound: \(sound.rawValue)")
-        } catch {
-            print("Error playing alert sound: \(error)")
-            playSystemSound()
-        }
+        let sound = timerCore.getCurrentAlertSound()
+        audioPlaybackManager.playAlertSound(sound, fallbackToSystemSound: true)
     }
 
     private func playMusic(_ music: BackgrounMusic) {
@@ -475,11 +478,6 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         print("✅ Playing music with AVPlayer: \(music.rawValue), isPlaying: \(musicPlayer?.timeControlStatus == .playing)")
     }
     
-    private func playSystemSound() {
-        // Fallback system sound
-        AudioServicesPlaySystemSound(1005) // System sound ID for alarm
-    }
-    
     private func scheduleNotification(title: String, body: String) {
         let content = UNMutableNotificationContent()
         content.title = title
@@ -505,21 +503,6 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
             UIApplication.shared.endBackgroundTask(backgroundTaskID)
             backgroundTaskID = .invalid
             print("Background task ended")
-        }
-    }
-
-    // MARK: - AVAudioPlayerDelegate
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if flag {
-            print("Audio finished playing successfully")
-        } else {
-            print("Audio playback interrupted")
-        }
-    }
-
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        if let error = error {
-            print("Audio decode error: \(error)")
         }
     }
 }
