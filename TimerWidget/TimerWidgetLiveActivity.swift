@@ -54,25 +54,25 @@ struct TimerWidgetLiveActivity: Widget {
                         }
 
                         // Progress visualization
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                // Background
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.secondary.opacity(0.2))
+                        ZStack(alignment: .leading) {
+                            // Background
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.secondary.opacity(0.2))
+                                .frame(maxWidth: .infinity)
 
-                                // Progress
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(LinearGradient(
-                                        colors: [.blue, .cyan],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    ))
-                                    .frame(width: geometry.size.width * intervalProgress(context))
-                            }
+                            // Progress
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(LinearGradient(
+                                    colors: [.blue, .cyan],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ))
+                                .frame(maxWidth: .infinity)
+                                .scaleEffect(x: intervalProgress(context), y: 1.0, anchor: .leading)
                         }
                         .frame(height: 8)
                     }
-                    .padding(.top, 8)
+                    .padding()
                 }
             } compactLeading: {
                 // Compact leading (left side of Dynamic Island)
@@ -114,7 +114,7 @@ struct LockScreenTimerView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                HStack(spacing: 8) {
+                HStack() {
                     Text("Interval \(context.state.currentInterval + 1)/\(context.state.totalIntervals)")
                         .font(.headline)
                         .fontWeight(.semibold)

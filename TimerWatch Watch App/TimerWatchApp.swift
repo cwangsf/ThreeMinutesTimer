@@ -13,7 +13,7 @@ import ThreeMinutesTimerKit
 struct TimerWatch_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
         }
         .modelContainer(for: AlarmSession.self)
     }

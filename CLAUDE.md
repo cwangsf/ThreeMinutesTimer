@@ -27,7 +27,7 @@ xcodebuild -scheme ThreeMinutesTimer clean
 
 - **AlarmSession** (defined in `AlarmManager.swift`): SwiftData `@Model` that persists session data (start/end times, completed intervals). The app uses SwiftData's model container for storage.
 
-- **ContentView.swift**: Main UI with session controls, sound selection buttons (disabled while running), and status display. Creates new `AlarmSession` instances and passes them to `AlarmManager`.
+- **HomeView.swift**: Main UI with session controls, sound selection buttons (disabled while running), and status display. Creates new `AlarmSession` instances and passes them to `AlarmManager`.
 
 - **ProgressCircleView.swift**: Circular progress indicator showing current interval (1-10) and countdown timer. Uses animated gradient stroke.
 
@@ -51,6 +51,6 @@ Uses String Catalog (`Localizable.xcstrings`) for internationalization. Currentl
 
 - Interval duration: Currently hardcoded to 10 seconds for testing (comments indicate production should be 180 seconds/3 minutes)
 - Total intervals: 10 (hardcoded in `AlarmManager`)
-- Notification permissions are requested on ContentView appearance
+- Notification permissions are requested on HomeView appearance
 - Session completion triggers a notification
 - Sound selection is disabled during active sessions

@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  ThreeMinutesTimer
 //
 //  Created by Cynthia Wang on 8/19/25.
@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 import ThreeMinutesTimerKit
 
-// MARK: - Content View
-struct ContentView: View {
+// MARK: - Home View
+struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Query private var sessions: [AlarmSession]
@@ -220,6 +220,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    HomeView()
         .modelContainer(for: AlarmSession.self, inMemory: true)
 }

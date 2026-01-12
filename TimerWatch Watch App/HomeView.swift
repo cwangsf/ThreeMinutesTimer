@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  TimerWatch Watch App
 //
 //  Created by Cynthia Wang on 1/7/26.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 import ThreeMinutesTimerKit
 
-struct ContentView: View {
+struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var timerManager = WatchTimerManager()
     let circleSize: CGFloat = 60
@@ -94,6 +94,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    HomeView()
         .modelContainer(for: AlarmSession.self, inMemory: true)
 }

@@ -67,7 +67,7 @@ class AlarmManager: NSObject {
     }
 
     // Platform-specific (iOS)
-    private var dispatchTimer: DispatchSourceTimer?
+    private var timerTask: Task<Void, Never>?
     private var musicPlayer: AVPlayer?
     private let audioPlaybackManager = AudioPlaybackManager()
     private var audioSessionActivated = false
@@ -114,7 +114,8 @@ class AlarmManager: NSObject {
             self.updateLiveActivity()
             self.liveActivityUpdateCounter = 0  // Reset counter
             // Schedule music to play after alert finishes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            Task {
+                try? await Task.sleep(for: .seconds(0.5))
                 self.playCurrentMusic()
             }
         }
@@ -393,20 +394,21 @@ class AlarmManager: NSObject {
     }
 
     private func stopTimer() {
-        dispatchTimer?.cancel()
-        dispatchTimer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
-    
+
     private func startTimer() {
-        let queue = DispatchQueue.global(qos: .userInitiated)
-        dispatchTimer = DispatchSource.makeTimerSource(queue: queue)
-        dispatchTimer?.schedule(wallDeadline: .now(), repeating: 1.0)
-        dispatchTimer?.setEventHandler { [weak self] in
-            DispatchQueue.main.async {
-                self?.timerCore.updateTimer()
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { break }
+
+                await MainActor.run {
+                    self?.timerCore.updateTimer()
+                }
             }
         }
-        dispatchTimer?.resume()
     }
     
     private func playCurrentMusic() {
@@ -462,14 +464,16 @@ class AlarmManager: NSObject {
         musicPlayer?.play()
 
         // Check immediately
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        Task {
+            try? await Task.sleep(for: .seconds(0.1))
             if let player = self.musicPlayer {
                 print("🎵 After 0.1s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
             }
         }
 
         // Check after 1 second
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        Task {
+            try? await Task.sleep(for: .seconds(1.0))
             if let player = self.musicPlayer {
                 print("🎵 After 1.0s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
             }

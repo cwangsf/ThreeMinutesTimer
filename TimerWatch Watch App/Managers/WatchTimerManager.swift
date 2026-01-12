@@ -27,7 +27,7 @@ class WatchTimerManager: NSObject {
     var intervalProgress: Double { timerCore.intervalProgress }
 
     // Platform-specific (watchOS)
-    private var timer: Timer?
+    private var timerTask: Task<Void, Never>?
     private let audioPlaybackManager = AudioPlaybackManager()
     private var extendedRuntimeSession: WKExtendedRuntimeSession?
 
@@ -157,14 +157,21 @@ class WatchTimerManager: NSObject {
 
     // MARK: - Timer
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.timerCore.updateTimer()
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { break }
+
+                await MainActor.run {
+                    self?.timerCore.updateTimer()
+                }
+            }
         }
     }
 
     private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
 
     // MARK: - Audio
