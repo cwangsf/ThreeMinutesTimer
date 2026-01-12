@@ -17,23 +17,13 @@ struct HomeView: View {
     @State private var alarmManager = AlarmManager()
     @State private var showSettings = false
 
-    private var timerState: TimerState {
-        if alarmManager.isRunning {
-            return .running
-        } else if alarmManager.currentInterval > 0 {
-            return .paused
-        } else {
-            return .idle
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
-                //getBackgroundImage()
+                getBackgroundImage()
                 
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack() {
                     // Header
                     VStack {
                         Text("Interval Alarm")
@@ -46,138 +36,19 @@ struct HomeView: View {
                             .foregroundColor(alarmManager.themeColor.color)
                     }
 
-                    // Progress Circle
-                    ProgressCircleView(alarmManager: alarmManager)
-
-                    // Status
-                    VStack {
-                        Text(alarmManager.statusText)
-                            .font(.headline)
-                            .foregroundColor(alarmManager.isRunning ? alarmManager.themeColor.color : .secondary)
-
-                        if alarmManager.isRunning {
-                            Text("Sound: \(alarmManager.currentSoundName)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
+                    // Progress & Status
+                    ProgressStatusView(alarmManager: alarmManager)
 
                     // Sound Selection
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Alarm Sounds")
-                            .font(.headline)
-                            .foregroundColor(alarmManager.themeColor.color)
-
-                        HStack {
-                            VStack {
-                                Text("Sound A")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Button(alarmManager.soundA.rawValue) {
-                                    alarmManager.soundA = nextSound(alarmManager.soundA)
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(alarmManager.isRunning)
-                            }
-
-                            Spacer()
-
-                            VStack {
-                                Text("Sound B")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Button(alarmManager.soundB.rawValue) {
-                                    alarmManager.soundB = nextSound(alarmManager.soundB)
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(alarmManager.isRunning)
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    SoundSelectionView(alarmManager: alarmManager)
 
                     // Music Selection
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Background Music")
-                            .font(.headline)
-                            .foregroundColor(alarmManager.themeColor.color)
-
-                        HStack {
-                            VStack {
-                                Text("Music A")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Button(alarmManager.musicA.rawValue) {
-                                    alarmManager.musicA = nextMusic(alarmManager.musicA)
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(alarmManager.isRunning)
-                            }
-
-                            Spacer()
-
-                            VStack {
-                                Text("Music B")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Button(alarmManager.musicB.rawValue) {
-                                    alarmManager.musicB = nextMusic(alarmManager.musicB)
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(alarmManager.isRunning)
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    MusicSelectionView(alarmManager: alarmManager)
 
                     // Control Buttons
-                    HStack(spacing: 20) {
-                        switch timerState {
-                        case .idle:
-                            Button("Start Session") {
-                                startNewSession()
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.large)
-
-                        case .running:
-                            Button("Pause") {
-                                alarmManager.pause()
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.large)
-
-                            Button("Stop") {
-                                alarmManager.stop()
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.red)
-                            .controlSize(.large)
-
-                        case .paused:
-                            Button("Resume") {
-                                alarmManager.resume()
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.large)
-
-                            Button("Stop") {
-                                alarmManager.stop()
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.red)
-                            .controlSize(.large)
-                        }
+                    ControlButtonsView(alarmManager: alarmManager) {
+                        startNewSession()
                     }
-                    .padding()
                     }
                 }
                 .onAppear {
@@ -215,20 +86,6 @@ struct HomeView: View {
         let session = AlarmSession()
         modelContext.insert(session)
         alarmManager.startSession(session: session)
-    }
-    
-    private func nextSound(_ current: AlarmSound) -> AlarmSound {
-        let sounds = AlarmSound.allCases
-        let currentIndex = sounds.firstIndex(of: current) ?? 0
-        let nextIndex = (currentIndex + 1) % sounds.count
-        return sounds[nextIndex]
-    }
-
-    private func nextMusic(_ current: BackgrounMusic) -> BackgrounMusic {
-        let tracks = BackgrounMusic.allCases
-        let currentIndex = tracks.firstIndex(of: current) ?? 0
-        let nextIndex = (currentIndex + 1) % tracks.count
-        return tracks[nextIndex]
     }
 
     private func requestNotificationPermission() {
