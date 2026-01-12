@@ -124,8 +124,12 @@ class WatchTimerManager: NSObject {
 
     func pause() {
         timerCore.pause()
-        stopTimer()
+        // Don't stop the timer - let it keep running but TimerCore won't decrement
         audioPlaybackManager.stopAlertSound()
+    }
+
+    func resume() {
+        timerCore.resume()
     }
 
     func stop() {

@@ -357,11 +357,17 @@ class AlarmManager: NSObject {
 
     func pause() {
         timerCore.pause()
-        stopTimer()
+        // Don't stop the timer - let it keep running but TimerCore won't decrement
         musicPlayer?.pause()
         musicPlayer = nil
         audioPlaybackManager.stopAlertSound()
         updateLiveActivity() // Update to show paused state
+    }
+
+    func resume() {
+        timerCore.resume()
+        playCurrentMusic()
+        updateLiveActivity()
     }
 
     func stop() {

@@ -17,10 +17,20 @@ struct HomeView: View {
     @State private var alarmManager = AlarmManager()
     @State private var showSettings = false
 
+    private var timerState: TimerState {
+        if alarmManager.isRunning {
+            return .running
+        } else if alarmManager.currentInterval > 0 {
+            return .paused
+        } else {
+            return .idle
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
-                getBackgroundImage()
+                //getBackgroundImage()
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -130,17 +140,33 @@ struct HomeView: View {
 
                     // Control Buttons
                     HStack(spacing: 20) {
-                        if !alarmManager.isRunning {
+                        switch timerState {
+                        case .idle:
                             Button("Start Session") {
                                 startNewSession()
                             }
                             .buttonStyle(.borderedProminent)
                             .controlSize(.large)
-                        } else {
+
+                        case .running:
                             Button("Pause") {
                                 alarmManager.pause()
                             }
                             .buttonStyle(.bordered)
+                            .controlSize(.large)
+
+                            Button("Stop") {
+                                alarmManager.stop()
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.red)
+                            .controlSize(.large)
+
+                        case .paused:
+                            Button("Resume") {
+                                alarmManager.resume()
+                            }
+                            .buttonStyle(.borderedProminent)
                             .controlSize(.large)
 
                             Button("Stop") {
