@@ -40,7 +40,7 @@ struct HomeView: View {
                     ProgressStatusView(alarmManager: alarmManager)
 
                     // Sound Selection
-                    SoundSelectionView(alarmManager: alarmManager)
+                    //SoundSelectionView(alarmManager: alarmManager)
 
                     // Music Selection
                     MusicSelectionView(alarmManager: alarmManager)

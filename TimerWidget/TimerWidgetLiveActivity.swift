@@ -96,7 +96,7 @@ struct TimerWidgetLiveActivity: Widget {
 
     // Calculate progress for current interval (0.0 to 1.0)
     private func intervalProgress(_ context: ActivityViewContext<TimerWidgetAttributes>) -> CGFloat {
-        let intervalDuration = 180.0 // 3 minutes
+        let intervalDuration = Double(TimerConstants.intervalDuration)
         let elapsed = intervalDuration - Double(context.state.secondsRemaining)
         return CGFloat(elapsed / intervalDuration)
     }
@@ -158,9 +158,9 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var interval1: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 0,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "3:00",
-            secondsRemaining: 180,
+            secondsRemaining: TimerConstants.intervalDuration,
             isRunning: true
         )
     }
@@ -168,7 +168,7 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var interval5: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 4,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "1:47",
             secondsRemaining: 107,
             isRunning: true
@@ -178,7 +178,7 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var paused: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 7,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "2:15",
             secondsRemaining: 135,
             isRunning: false

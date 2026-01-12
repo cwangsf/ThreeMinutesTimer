@@ -49,8 +49,9 @@ Uses String Catalog (`Localizable.xcstrings`) for internationalization. Currentl
 
 ## Key Implementation Details
 
-- Interval duration: Currently hardcoded to 10 seconds for testing (comments indicate production should be 180 seconds/3 minutes)
-- Total intervals: 10 (hardcoded in `AlarmManager`)
+- Interval duration: Configured in `TimerConstants.intervalDuration` (180 seconds / 3 minutes)
+- Total intervals: Configured in `TimerConstants.totalIntervals` (10 intervals)
+- Total session duration: 30 minutes (10 intervals × 3 minutes)
 - Notification permissions are requested on HomeView appearance
 - Session completion triggers a notification
 - Sound selection is disabled during active sessions

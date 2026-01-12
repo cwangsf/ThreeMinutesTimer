@@ -26,7 +26,7 @@ struct HomeView: View {
 
     var body: some View {
         VStack {
-            Text("\(timerManager.currentInterval + 1)/10")
+            Text("\(timerManager.currentInterval + 1)/\(TimerConstants.totalIntervals)")
                 .font(.title)
                 .fontWeight(.bold)
 

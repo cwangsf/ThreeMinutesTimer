@@ -43,7 +43,7 @@ struct ProgressCircleView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                Text("\(alarmManager.currentInterval + 1)/10")
+                Text("\(alarmManager.currentInterval + 1)/\(TimerConstants.totalIntervals)")
                     .font(.title)
                     .fontWeight(.bold)
 

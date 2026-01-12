@@ -216,7 +216,7 @@ class AlarmManager: NSObject {
         let attributes = TimerWidgetAttributes(sessionStartTime: Date())
         let contentState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: timeRemaining,
             secondsRemaining: secondsRemaining,
             isRunning: isRunning
@@ -241,7 +241,7 @@ class AlarmManager: NSObject {
 
         let contentState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: timeRemaining,
             secondsRemaining: secondsRemaining,
             isRunning: isRunning
@@ -262,7 +262,7 @@ class AlarmManager: NSObject {
 
         let finalState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "0:00",
             secondsRemaining: 0,
             isRunning: false
