@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  TimerWatch Watch App
 //
 //  Created by Cynthia Wang on 1/7/26.
@@ -9,14 +9,24 @@ import SwiftUI
 import SwiftData
 import ThreeMinutesTimerKit
 
-struct ContentView: View {
+struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var timerManager = WatchTimerManager()
     let circleSize: CGFloat = 60
 
+    private var timerState: TimerState {
+        if timerManager.isRunning {
+            return .running
+        } else if timerManager.currentInterval > 0 {
+            return .paused
+        } else {
+            return .idle
+        }
+    }
+
     var body: some View {
         VStack {
-            Text("\(timerManager.currentInterval + 1)/10")
+            Text("\(timerManager.currentInterval + 1)/\(TimerConstants.totalIntervals)")
                 .font(.title)
                 .fontWeight(.bold)
 
@@ -54,7 +64,8 @@ struct ContentView: View {
 
             // Control buttons
             HStack {
-                if !timerManager.isRunning {
+                switch timerState {
+                case .idle:
                     Button {
                         startNewSession()
                     } label: {
@@ -62,7 +73,8 @@ struct ContentView: View {
                             .font(.title3)
                     }
                     .buttonStyle(.borderedProminent)
-                } else {
+
+                case .running:
                     Button {
                         timerManager.pause()
                     } label: {
@@ -70,6 +82,24 @@ struct ContentView: View {
                             .font(.title3)
                     }
                     .buttonStyle(.bordered)
+
+                    Button {
+                        timerManager.stop()
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.body)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+
+                case .paused:
+                    Button {
+                        timerManager.resume()
+                    } label: {
+                        Image(systemName: "play.fill")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.borderedProminent)
 
                     Button {
                         timerManager.stop()
@@ -94,6 +124,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    HomeView()
         .modelContainer(for: AlarmSession.self, inMemory: true)
 }

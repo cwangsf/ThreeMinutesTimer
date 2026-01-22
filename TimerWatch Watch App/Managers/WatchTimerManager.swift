@@ -13,7 +13,7 @@ import ThreeMinutesTimerKit
 
 // MARK: - Watch Timer Manager
 @Observable
-class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
+class WatchTimerManager: NSObject {
     // Timer core (shared business logic)
     private var timerCore = TimerCore()
 
@@ -26,13 +26,9 @@ class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
     var secondsRemaining: Int { timerCore.secondsRemaining }
     var intervalProgress: Double { timerCore.intervalProgress }
 
-    // Audio preferences (simplified for watch - no selection UI)
-    private var soundA: AlarmSound = .bell
-    private var soundB: AlarmSound = .chime
-
     // Platform-specific (watchOS)
-    private var timer: Timer?
-    private var alertPlayer: AVAudioPlayer?
+    private var timerTask: Task<Void, Never>?
+    private let audioPlaybackManager = AudioPlaybackManager()
     private var extendedRuntimeSession: WKExtendedRuntimeSession?
 
     // Watch Connectivity
@@ -95,8 +91,10 @@ class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
             guard let self = self else { return }
             print("📥 Watch received preferences update from iPhone")
             // Update our settings from iPhone
-            self.soundA = message.soundA
-            self.soundB = message.soundB
+            self.timerCore.soundA = message.soundA
+            self.timerCore.soundB = message.soundB
+            self.timerCore.musicA = message.musicA
+            self.timerCore.musicB = message.musicB
         }
     }
 
@@ -126,9 +124,12 @@ class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
 
     func pause() {
         timerCore.pause()
-        stopTimer()
-        alertPlayer?.stop()
-        alertPlayer = nil
+        // Don't stop the timer - let it keep running but TimerCore won't decrement
+        audioPlaybackManager.stopAlertSound()
+    }
+
+    func resume() {
+        timerCore.resume()
     }
 
     func stop() {
@@ -155,39 +156,32 @@ class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
     }
 
     private func cleanupAudio() {
-        alertPlayer?.stop()
-        alertPlayer = nil
+        audioPlaybackManager.stopAlertSound()
     }
 
     // MARK: - Timer
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.timerCore.updateTimer()
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { break }
+
+                await MainActor.run {
+                    self?.timerCore.updateTimer()
+                }
+            }
         }
     }
 
     private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
 
     // MARK: - Audio
     private func playAlertSound() {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-
-        guard let url = Bundle.main.url(forResource: sound.filename, withExtension: "mp3") else {
-            print("⚠️ Alert sound file not found: \(sound.filename)")
-            return
-        }
-
-        do {
-            alertPlayer = try AVAudioPlayer(contentsOf: url)
-            alertPlayer?.delegate = self
-            alertPlayer?.play()
-            print("✅ Playing alert sound: \(sound.rawValue)")
-        } catch {
-            print("❌ Error playing alert sound: \(error)")
-        }
+        let sound = timerCore.getCurrentAlertSound()
+        audioPlaybackManager.playAlertSound(sound)
     }
 
     // MARK: - Haptic Feedback
@@ -208,13 +202,6 @@ class WatchTimerManager: NSObject, AVAudioPlayerDelegate {
         extendedRuntimeSession?.invalidate()
         extendedRuntimeSession = nil
         print("✅ Extended runtime session ended")
-    }
-
-    // MARK: - AVAudioPlayerDelegate
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if flag {
-            print("✅ Audio finished playing successfully")
-        }
     }
 }
 

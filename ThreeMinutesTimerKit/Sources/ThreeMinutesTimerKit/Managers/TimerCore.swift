@@ -17,6 +17,12 @@ public class TimerCore {
     public var timeRemaining = "3:00"
     public var secondsRemaining = TimerConstants.intervalDuration
 
+    // MARK: - Audio Preferences
+    public var soundA: AlarmSound = .bell
+    public var soundB: AlarmSound = .chime
+    public var musicA: BackgrounMusic = .musicA
+    public var musicB: BackgrounMusic = .musicB
+
     // MARK: - Session Tracking
     public private(set) var currentSession: AlarmSession?
     public private(set) var intervalStartTime: Date?
@@ -182,5 +188,21 @@ public class TimerCore {
     public var intervalProgress: Double {
         let secondsElapsedInInterval = TimerConstants.intervalDuration - secondsRemaining
         return Double(secondsElapsedInInterval) / Double(TimerConstants.intervalDuration)
+    }
+
+    // MARK: - Audio Selection
+    /// Returns the appropriate alert sound for the current interval
+    public func getCurrentAlertSound() -> AlarmSound {
+        return (currentInterval % 2 == 0) ? soundA : soundB
+    }
+
+    /// Returns the appropriate music track for the current interval
+    public func getCurrentMusic() -> BackgrounMusic {
+        return (currentInterval % 2 == 0) ? musicA : musicB
+    }
+
+    /// Returns the name of the current sound (for display purposes)
+    public var currentSoundName: String {
+        return getCurrentAlertSound().rawValue
     }
 }

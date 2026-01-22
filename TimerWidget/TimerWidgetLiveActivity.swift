@@ -54,25 +54,25 @@ struct TimerWidgetLiveActivity: Widget {
                         }
 
                         // Progress visualization
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                // Background
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.secondary.opacity(0.2))
+                        ZStack(alignment: .leading) {
+                            // Background
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.secondary.opacity(0.2))
+                                .frame(maxWidth: .infinity)
 
-                                // Progress
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(LinearGradient(
-                                        colors: [.blue, .cyan],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    ))
-                                    .frame(width: geometry.size.width * intervalProgress(context))
-                            }
+                            // Progress
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(LinearGradient(
+                                    colors: [.blue, .cyan],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ))
+                                .frame(maxWidth: .infinity)
+                                .scaleEffect(x: intervalProgress(context), y: 1.0, anchor: .leading)
                         }
                         .frame(height: 8)
                     }
-                    .padding(.top, 8)
+                    .padding()
                 }
             } compactLeading: {
                 // Compact leading (left side of Dynamic Island)
@@ -96,7 +96,7 @@ struct TimerWidgetLiveActivity: Widget {
 
     // Calculate progress for current interval (0.0 to 1.0)
     private func intervalProgress(_ context: ActivityViewContext<TimerWidgetAttributes>) -> CGFloat {
-        let intervalDuration = 180.0 // 3 minutes
+        let intervalDuration = Double(TimerConstants.intervalDuration)
         let elapsed = intervalDuration - Double(context.state.secondsRemaining)
         return CGFloat(elapsed / intervalDuration)
     }
@@ -114,7 +114,7 @@ struct LockScreenTimerView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                HStack(spacing: 8) {
+                HStack() {
                     Text("Interval \(context.state.currentInterval + 1)/\(context.state.totalIntervals)")
                         .font(.headline)
                         .fontWeight(.semibold)
@@ -158,9 +158,9 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var interval1: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 0,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "3:00",
-            secondsRemaining: 180,
+            secondsRemaining: TimerConstants.intervalDuration,
             isRunning: true
         )
     }
@@ -168,7 +168,7 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var interval5: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 4,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "1:47",
             secondsRemaining: 107,
             isRunning: true
@@ -178,7 +178,7 @@ extension TimerWidgetAttributes.ContentState {
     fileprivate static var paused: TimerWidgetAttributes.ContentState {
         TimerWidgetAttributes.ContentState(
             currentInterval: 7,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "2:15",
             secondsRemaining: 135,
             isRunning: false

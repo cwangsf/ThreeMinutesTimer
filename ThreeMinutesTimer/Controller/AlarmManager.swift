@@ -18,7 +18,7 @@ import ActivityKit
 
 // MARK: - Alarm Manager
 @Observable
-class AlarmManager: NSObject, AVAudioPlayerDelegate {
+class AlarmManager: NSObject {
     // Timer core (shared business logic)
     private var timerCore = TimerCore()
 
@@ -30,11 +30,35 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     var statusText: String { timerCore.statusText }
     var secondsRemaining: Int { timerCore.secondsRemaining }
 
-    // Audio preferences
-    var soundA: AlarmSound = .bell
-    var soundB: AlarmSound = .chime
-    var musicA: BackgrounMusic = .musicA
-    var musicB: BackgrounMusic = .musicB
+    // Audio preferences (delegated to TimerCore with setters for Watch sync)
+    var soundA: AlarmSound {
+        get { timerCore.soundA }
+        set {
+            timerCore.soundA = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var soundB: AlarmSound {
+        get { timerCore.soundB }
+        set {
+            timerCore.soundB = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var musicA: BackgrounMusic {
+        get { timerCore.musicA }
+        set {
+            timerCore.musicA = newValue
+            sendPreferencesToWatch()
+        }
+    }
+    var musicB: BackgrounMusic {
+        get { timerCore.musicB }
+        set {
+            timerCore.musicB = newValue
+            sendPreferencesToWatch()
+        }
+    }
     var themeColor: ThemeColor {
         didSet {
             UserDefaults.standard.set(themeColor.rawValue, forKey: "themeColor")
@@ -43,9 +67,9 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     }
 
     // Platform-specific (iOS)
-    private var dispatchTimer: DispatchSourceTimer?
+    private var timerTask: Task<Void, Never>?
     private var musicPlayer: AVPlayer?
-    private var alertPlayer: AVAudioPlayer?
+    private let audioPlaybackManager = AudioPlaybackManager()
     private var audioSessionActivated = false
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
@@ -57,8 +81,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     private let watchConnectivity = WatchConnectivityManager.shared
 
     var currentSoundName: String {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-        return sound.rawValue
+        return timerCore.currentSoundName
     }
     
     override init() {
@@ -91,7 +114,8 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
             self.updateLiveActivity()
             self.liveActivityUpdateCounter = 0  // Reset counter
             // Schedule music to play after alert finishes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            Task {
+                try? await Task.sleep(for: .seconds(0.5))
                 self.playCurrentMusic()
             }
         }
@@ -152,10 +176,10 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
             guard let self = self else { return }
             print("📥 iOS received preferences update from watch")
             // Update our settings if watch changed them
-            self.soundA = message.soundA
-            self.soundB = message.soundB
-            self.musicA = message.musicA
-            self.musicB = message.musicB
+            self.timerCore.soundA = message.soundA
+            self.timerCore.soundB = message.soundB
+            self.timerCore.musicA = message.musicA
+            self.timerCore.musicB = message.musicB
             self.themeColor = message.themeColor
         }
     }
@@ -192,7 +216,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         let attributes = TimerWidgetAttributes(sessionStartTime: Date())
         let contentState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: timeRemaining,
             secondsRemaining: secondsRemaining,
             isRunning: isRunning
@@ -217,7 +241,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
 
         let contentState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: timeRemaining,
             secondsRemaining: secondsRemaining,
             isRunning: isRunning
@@ -238,7 +262,7 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
 
         let finalState = TimerWidgetAttributes.ContentState(
             currentInterval: currentInterval,
-            totalIntervals: 10,
+            totalIntervals: TimerConstants.totalIntervals,
             timeRemaining: "0:00",
             secondsRemaining: 0,
             isRunning: false
@@ -333,12 +357,17 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
 
     func pause() {
         timerCore.pause()
-        stopTimer()
+        // Don't stop the timer - let it keep running but TimerCore won't decrement
         musicPlayer?.pause()
         musicPlayer = nil
-        alertPlayer?.stop()
-        alertPlayer = nil
+        audioPlaybackManager.stopAlertSound()
         updateLiveActivity() // Update to show paused state
+    }
+
+    func resume() {
+        timerCore.resume()
+        playCurrentMusic()
+        updateLiveActivity()
     }
 
     func stop() {
@@ -367,53 +396,35 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
     private func cleanupAudio() {
         musicPlayer?.pause()
         musicPlayer = nil
-        alertPlayer?.stop()
-        alertPlayer = nil
+        audioPlaybackManager.stopAlertSound()
     }
 
     private func stopTimer() {
-        dispatchTimer?.cancel()
-        dispatchTimer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
-    
+
     private func startTimer() {
-        let queue = DispatchQueue.global(qos: .userInitiated)
-        dispatchTimer = DispatchSource.makeTimerSource(queue: queue)
-        dispatchTimer?.schedule(wallDeadline: .now(), repeating: 1.0)
-        dispatchTimer?.setEventHandler { [weak self] in
-            DispatchQueue.main.async {
-                self?.timerCore.updateTimer()
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { break }
+
+                await MainActor.run {
+                    self?.timerCore.updateTimer()
+                }
             }
         }
-        dispatchTimer?.resume()
     }
     
     private func playCurrentMusic() {
-        let music = (currentInterval % 2 == 0) ? musicA : musicB
+        let music = timerCore.getCurrentMusic()
         playMusic(music)
     }
 
     private func playAlertSound() {
-        let sound = (currentInterval % 2 == 0) ? soundA : soundB
-        playAlertSoundWithType(sound)
-    }
-
-    private func playAlertSoundWithType(_ sound: AlarmSound) {
-        guard let url = Bundle.main.url(forResource: sound.filename, withExtension: "mp3") else {
-            // Fallback to system sound
-            playSystemSound()
-            return
-        }
-
-        do {
-            alertPlayer = try AVAudioPlayer(contentsOf: url)
-            alertPlayer?.delegate = self
-            alertPlayer?.play()
-            print("Playing alert sound: \(sound.rawValue)")
-        } catch {
-            print("Error playing alert sound: \(error)")
-            playSystemSound()
-        }
+        let sound = timerCore.getCurrentAlertSound()
+        audioPlaybackManager.playAlertSound(sound, fallbackToSystemSound: true)
     }
 
     private func playMusic(_ music: BackgrounMusic) {
@@ -459,25 +470,22 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
         musicPlayer?.play()
 
         // Check immediately
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        Task {
+            try? await Task.sleep(for: .seconds(0.1))
             if let player = self.musicPlayer {
                 print("🎵 After 0.1s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
             }
         }
 
         // Check after 1 second
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        Task {
+            try? await Task.sleep(for: .seconds(1.0))
             if let player = self.musicPlayer {
                 print("🎵 After 1.0s - timeControlStatus: \(player.timeControlStatus.rawValue), currentTime: \(player.currentTime().seconds)")
             }
         }
 
         print("✅ Playing music with AVPlayer: \(music.rawValue), isPlaying: \(musicPlayer?.timeControlStatus == .playing)")
-    }
-    
-    private func playSystemSound() {
-        // Fallback system sound
-        AudioServicesPlaySystemSound(1005) // System sound ID for alarm
     }
     
     private func scheduleNotification(title: String, body: String) {
@@ -505,21 +513,6 @@ class AlarmManager: NSObject, AVAudioPlayerDelegate {
             UIApplication.shared.endBackgroundTask(backgroundTaskID)
             backgroundTaskID = .invalid
             print("Background task ended")
-        }
-    }
-
-    // MARK: - AVAudioPlayerDelegate
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if flag {
-            print("Audio finished playing successfully")
-        } else {
-            print("Audio playback interrupted")
-        }
-    }
-
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        if let error = error {
-            print("Audio decode error: \(error)")
         }
     }
 }
